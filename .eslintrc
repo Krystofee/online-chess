@@ -1,0 +1,68 @@
+{
+  "extends": ["airbnb", "prettier"],
+  "env": {
+    "browser": true
+  },
+  "globals": {
+    "gettext": true,
+    "ngettext": true,
+    "pgettext": true,
+    "interpolate": true,
+    "moment": true,
+    "$": true,
+    "test": true,
+    "expect": true
+  },
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "plugins": ["@typescript-eslint", "prettier", "react-hooks"],
+  "rules": {
+    "react/jsx-filename-extension": [1, { "extensions": [".jsx", ".tsx"] }],
+    "radix": 0,
+    "react/jsx-no-bind": 0,
+    "jsx-a11y/anchor-is-valid": [
+      "error",
+      {
+        "components": ["Link"],
+        "specialLink": ["to"]
+      }
+    ],
+    "jsx-a11y/no-autofocus": 0,
+    "max-len": [
+      2,
+      {
+        "code": 120,
+        "ignoreStrings": true,
+        "ignoreTemplateLiterals": true,
+        "ignoreComments": true
+      }
+    ],
+    "no-param-reassign": 0,
+    "react/no-did-mount-set-state": 0,
+    "array-callback-return": 0,
+    "lines-between-class-members": 0,
+    "object-curly-newline": 0,
+    "prefer-destructuring": 0,
+    "react/forbid-prop-types": 0,
+    "react/destructuring-assignment": 0,
+    "react/jsx-one-expression-per-line": 0,
+    "jsx-a11y/click-events-have-key-events": 0,
+    "jsx-a11y/label-has-for": 0,
+    "jsx-a11y/label-has-associated-control": 0,
+    "func-names": 0,
+    "camelcase": 0,
+    "react/jsx-wrap-multilines": 0,
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
+  },
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "paths": ["react"],
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
+      }
+    }
+  }
+}
