@@ -8,9 +8,9 @@ declare interface IPiece {
   renderPosition: BoardCoord;
   color: PieceColor;
   type: PieceType;
+  moveCount: number;
 
   move: (coord: Coord) => boolean;
-  moveBoardCoord: (coord: BoardCoord) => boolean;
 
   possibleMoves: Coord[];
 }

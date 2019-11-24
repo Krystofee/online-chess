@@ -18,7 +18,7 @@ const Piece = ({ game, piece }: Props) => (
     image={piece.color === 'B' ? blackPieces[piece.type] : whitePieces[piece.type]}
     onDragStart={() => game.selectPiece(piece)}
     onDragEnd={(evt) => {
-      piece.moveBoardCoord({ x: evt.target.x(), y: evt.target.y() });
+      game.movePiece(piece, { x: evt.target.x(), y: evt.target.y() });
       evt.target.to({ ...piece.renderPosition, duration: 0.1 });
       game.unselectPiece();
     }}

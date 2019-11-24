@@ -1,6 +1,6 @@
 import { computed, action, observable } from 'mobx';
 import { uuid } from 'uuidv4';
-import { fromBoardCoord, toBoardCoord, includesCoord } from '../helpers';
+import { toBoardCoord, includesCoord } from '../helpers';
 
 class BasePiece implements IPiece {
   id: string;
@@ -9,7 +9,7 @@ class BasePiece implements IPiece {
   @observable position: Coord;
   @observable type: PieceType;
   @observable color: PieceColor;
-  @observable hasMoved = false;
+  @observable moveCount = 0;
 
   constructor(gameStore: IChessGameStore, type: PieceType, color: PieceColor, position: Coord) {
     this.id = uuid();
@@ -27,14 +27,10 @@ class BasePiece implements IPiece {
     if (this.position !== coord && includesCoord(this.possibleMoves, coord)) {
       console.log('move', coord);
       this.position = coord;
-      this.hasMoved = true;
+      this.moveCount += 1;
       return true;
     }
     return false;
-  };
-
-  @action moveBoardCoord = (boardCoord: Coord) => {
-    return this.move(fromBoardCoord(boardCoord));
   };
 
   @computed get possibleMoves() {
@@ -49,6 +45,10 @@ class BasePiece implements IPiece {
         y: 4,
       },
     ];
+  }
+
+  @computed get hasMoved() {
+    return this.moveCount > 0;
   }
 }
 

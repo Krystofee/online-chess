@@ -15,4 +15,6 @@ declare interface IChessGameStore {
   selectPiece: (piece: Piece) => void;
   unselectPiece: () => void;
   possibleMoves: Coord[];
+
+  movePiece(piece: IPiece, coord: BoardCoord): void;
 }

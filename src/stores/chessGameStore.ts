@@ -5,7 +5,7 @@ import King from './pieces/King';
 import Bishop from './pieces/Bishop';
 import Knight from './pieces/Knight';
 import Pawn from './pieces/Pawn';
-import { toBoardCoord } from './helpers';
+import { toBoardCoord, fromBoardCoord } from './helpers';
 
 export function getStartingPieces(game: IChessGameStore): IPiece[] {
   return [
@@ -74,6 +74,21 @@ class ChessGameStore implements IChessGameStore {
       .filter((coord) => coord.x >= 1 && coord.x <= 8 && coord.y >= 1 && coord.y <= 8) // filter only valid moves
       .map(toBoardCoord);
   }
+
+  @action movePiece = (piece: IPiece, boardCoord: BoardCoord) => {
+    const coord = fromBoardCoord(boardCoord);
+    const moved = piece.move(coord);
+
+    if (moved) {
+      const takenPiece = this.pieces.find(
+        (item) => item.id !== piece.id && item.position.x === piece.position.x && item.position.y === piece.position.y,
+      );
+      if (takenPiece) {
+        console.log('Takes!');
+        this.pieces = this.pieces.filter((item) => item.id !== takenPiece.id);
+      }
+    }
+  };
 }
 
 export default ChessGameStore;

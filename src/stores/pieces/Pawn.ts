@@ -10,20 +10,65 @@ class Pawn extends BasePiece implements IPiece {
   }
 
   @computed get possibleMoves() {
-    const moves = [
-      {
-        x: 0,
-        y: 1,
-      },
-      ...(!this.hasMoved
-        ? [
-            {
-              x: 0,
-              y: 2,
-            },
-          ]
-        : []),
-    ];
+    const moves = [];
+    const take_y = this.position.y + 1 * this.direction;
+
+    if (
+      !this.game.pieces.find(
+        (item) => item.color !== this.color && item.position.x === this.position.x && item.position.y === take_y,
+      )
+    ) {
+      moves.push({ x: 0, y: 1 });
+    }
+    if (
+      !this.hasMoved &&
+      !this.game.pieces.find(
+        (item) =>
+          item.color !== this.color &&
+          item.position.x === this.position.x &&
+          item.position.y === take_y + 1 * this.direction,
+      )
+    ) {
+      moves.push({ x: 0, y: 2 });
+    }
+
+    if (
+      this.game.pieces.find(
+        (item) => item.color !== this.color && item.position.x === this.position.x + 1 && item.position.y === take_y,
+      )
+    ) {
+      moves.push({ x: 1, y: 1 });
+    }
+
+    if (
+      this.game.pieces.find(
+        (item) => item.color !== this.color && item.position.x === this.position.x - 1 && item.position.y === take_y,
+      )
+    ) {
+      moves.push({ x: -1, y: 1 });
+    }
+
+    // en passant
+    const enPassantY = this.color === 'W' ? 5 : 4;
+    if (this.position.y === enPassantY) {
+      this.game.pieces
+        .filter(
+          (item) =>
+            item.moveCount === 1 &&
+            item.type === 'P' &&
+            item.color !== this.color &&
+            item.position.y === this.position.y &&
+            (item.position.x === this.position.x + 1 || item.position.x === this.position.x - 1),
+        )
+        .forEach((piece) => {
+          moves.push({
+            x: piece.position.x - this.position.x,
+            y: 1,
+          });
+        });
+    }
+
+    console.log(moves);
 
     return moves.map(({ x, y }) => ({
       x: this.position.x + x,
