@@ -52,6 +52,14 @@ class ChessGameStore implements IChessGameStore {
     this.pieces = getStartingPieces(this);
   }
 
+  @computed get piecesArray() {
+    const board = [...Array(8).keys()].map(() => [...Array<IPiece | null>(8)]);
+    this.pieces.forEach((piece) => {
+      board[piece.position.y - 1][piece.position.x - 1] = piece;
+    });
+    return board;
+  }
+
   @action selectPiece = (piece: IPiece) => {
     this.selectedPiece = piece;
   };

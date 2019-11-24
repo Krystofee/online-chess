@@ -28,15 +28,17 @@ class BasePiece implements IPiece {
       console.log('move', coord);
       this.position = coord;
       this.hasMoved = true;
+      return true;
     }
+    return false;
   };
 
   @action moveBoardCoord = (boardCoord: Coord) => {
-    this.move(fromBoardCoord(boardCoord));
+    return this.move(fromBoardCoord(boardCoord));
   };
 
   @computed get possibleMoves() {
-    console.log(this);
+    console.log(this.game.piecesArray);
     return [
       {
         x: 3,

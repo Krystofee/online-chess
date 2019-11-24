@@ -9,8 +9,8 @@ declare interface IPiece {
   color: PieceColor;
   type: PieceType;
 
-  move: (coord: Coord) => void;
-  moveBoardCoord: (coord: BoardCoord) => void;
+  move: (coord: Coord) => boolean;
+  moveBoardCoord: (coord: BoardCoord) => boolean;
 
   possibleMoves: Coord[];
 }
