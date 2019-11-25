@@ -9,7 +9,7 @@ class Pawn extends BasePiece implements IPiece {
     this.direction = color === 'B' ? -1 : 1;
   }
 
-  @computed get possibleMoves() {
+  @computed get possibleMoves(): Move[] {
     const moves: Move[] = [];
     const take_y = this.position.y + 1 * this.direction;
 
@@ -18,7 +18,7 @@ class Pawn extends BasePiece implements IPiece {
         (item) => item.color !== this.color && item.position.x === this.position.x && item.position.y === take_y,
       )
     ) {
-      moves.push({ position: { x: 0, y: 1 } });
+      moves.push({ piece: this, position: { x: 0, y: 1 } });
     }
 
     if (
@@ -30,7 +30,7 @@ class Pawn extends BasePiece implements IPiece {
           item.position.y === take_y + 1 * this.direction,
       )
     ) {
-      moves.push({ position: { x: 0, y: 2 } });
+      moves.push({ piece: this, position: { x: 0, y: 2 } });
     }
 
     // take
@@ -38,7 +38,7 @@ class Pawn extends BasePiece implements IPiece {
       (item) => item.color !== this.color && item.position.x === this.position.x + 1 && item.position.y === take_y,
     );
     if (leftPiece) {
-      moves.push({ position: { x: 1, y: 1 }, takes: leftPiece });
+      moves.push({ piece: this, position: { x: 1, y: 1 }, takes: leftPiece });
     }
 
     // take
@@ -46,7 +46,7 @@ class Pawn extends BasePiece implements IPiece {
       (item) => item.color !== this.color && item.position.x === this.position.x - 1 && item.position.y === take_y,
     );
     if (rightPiece) {
-      moves.push({ position: { x: -1, y: 1 }, takes: rightPiece });
+      moves.push({ piece: this, position: { x: -1, y: 1 }, takes: rightPiece });
     }
 
     // en passant
@@ -63,6 +63,7 @@ class Pawn extends BasePiece implements IPiece {
         )
         .forEach((piece) => {
           moves.push({
+            piece: this,
             position: { x: piece.position.x - this.position.x, y: 1 },
             takes: piece,
           });
@@ -71,7 +72,8 @@ class Pawn extends BasePiece implements IPiece {
 
     console.log(moves);
 
-    return moves.map(({ position: { x, y }, takes }) => ({
+    return moves.map(({ position: { x, y }, takes, piece }) => ({
+      piece,
       takes,
       position: { x: this.position.x + x, y: this.position.y + y * this.direction },
     }));

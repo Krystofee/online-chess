@@ -10,6 +10,9 @@ type Props = {
 
 const Piece = ({ game, piece }: Props) => (
   <Image
+    ref={(ref) => {
+      piece.imageRef = ref;
+    }}
     draggable
     x={piece.renderPosition.x}
     y={piece.renderPosition.y}
@@ -19,7 +22,6 @@ const Piece = ({ game, piece }: Props) => (
     onDragStart={() => game.selectPiece(piece)}
     onDragEnd={(evt) => {
       game.movePiece(piece, { x: evt.target.x(), y: evt.target.y() });
-      evt.target.to({ ...piece.renderPosition, duration: 0.1 });
       game.unselectPiece();
     }}
   />

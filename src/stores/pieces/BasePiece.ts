@@ -1,9 +1,11 @@
+import Konva from 'konva';
 import { computed, action, observable } from 'mobx';
 import { uuid } from 'uuidv4';
 import { toBoardCoord, findMove } from '../helpers';
 
 class BasePiece implements IPiece {
   id: string;
+  imageRef: Konva.Image | null = null;
   game: IChessGameStore;
 
   @observable position: Coord;
@@ -23,12 +25,21 @@ class BasePiece implements IPiece {
     return toBoardCoord(this.position);
   }
 
-  @action move = (coord: Coord) => {
+  @action move: (coord: Coord, force?: boolean) => Move | null = (coord: Coord, force = false) => {
     const possibleMoves = this.possibleMoves;
-    const move = findMove(possibleMoves, coord);
+    const move: Move | undefined = force ? { piece: this, position: coord } : findMove(possibleMoves, coord);
+
+    console.log('moving', this, move);
+
     if (this.position !== coord && move) {
       this.position = coord;
       this.moveCount += 1;
+      if (this.imageRef) {
+        this.imageRef.to({
+          ...this.renderPosition,
+          duration: 0.1,
+        });
+      }
       return move;
     }
     return null;

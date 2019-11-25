@@ -31,6 +31,7 @@ export const generateOffsetMoves = (piece: IPiece, allPieces: IPiece[], offsets:
       encounteredPiece = allPieces.find(findPiece);
       if (!encounteredPiece) {
         moves.push({
+          piece,
           position: { x, y },
         });
       }
@@ -40,6 +41,7 @@ export const generateOffsetMoves = (piece: IPiece, allPieces: IPiece[], offsets:
 
     if (encounteredPiece && encounteredPiece.color !== piece.color) {
       moves.push({
+        piece,
         position: { x, y },
         takes: encounteredPiece,
       });

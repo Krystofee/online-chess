@@ -78,6 +78,12 @@ class ChessGameStore implements IChessGameStore {
         console.log('Takes!', piece, 'x', takes);
         this.pieces = this.pieces.filter((item) => item.id !== takes.id);
       }
+
+      const nested = move.nested;
+      console.log('move nested', nested);
+      if (nested) {
+        nested.piece.move(nested.position, true);
+      }
     }
   };
 }
