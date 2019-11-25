@@ -1,6 +1,6 @@
 import { computed, action, observable } from 'mobx';
 import { uuid } from 'uuidv4';
-import { toBoardCoord, includesCoord } from '../helpers';
+import { toBoardCoord, findMove } from '../helpers';
 
 class BasePiece implements IPiece {
   id: string;
@@ -24,25 +24,30 @@ class BasePiece implements IPiece {
   }
 
   @action move = (coord: Coord) => {
-    if (this.position !== coord && includesCoord(this.possibleMoves, coord)) {
-      console.log('move', coord);
+    const possibleMoves = this.possibleMoves;
+    const move = findMove(possibleMoves, coord);
+    if (this.position !== coord && move) {
       this.position = coord;
       this.moveCount += 1;
-      return true;
+      return move;
     }
-    return false;
+    return null;
   };
 
   @computed get possibleMoves() {
-    console.log(this.game.piecesArray);
+    console.log(this);
     return [
       {
-        x: 3,
-        y: 3,
+        position: {
+          x: 3,
+          y: 3,
+        },
       },
       {
-        x: 4,
-        y: 4,
+        position: {
+          x: 4,
+          y: 4,
+        },
       },
     ];
   }

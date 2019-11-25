@@ -12,5 +12,5 @@ export const fromBoardCoord = (coord: BoardCoord) =>
     y: Math.floor((coord.y + commonStore.pieceSize / 2) / commonStore.pieceSize) + 1,
   } as Coord);
 
-export const includesCoord = (coords: Coord[], coord: Coord) =>
-  coords.findIndex((item) => item.x === coord.x && item.y === coord.y) !== -1;
+export const findMove = (moves: Move[], coord: Coord) =>
+  moves.find((item) => item.position.x === coord.x && item.position.y === coord.y);

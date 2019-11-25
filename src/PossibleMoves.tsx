@@ -10,7 +10,7 @@ type Props = {
 const Pieces = ({ game }: Props) => {
   return (
     <Layer>
-      {game.possibleMoves.map(({ x, y }) => (
+      {game.possibleMoves.map(({ position: { x, y } }) => (
         <Circle
           key={`${x}${y}`}
           x={x + commonStore.pieceSize / 2}

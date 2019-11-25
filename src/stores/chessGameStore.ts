@@ -52,14 +52,6 @@ class ChessGameStore implements IChessGameStore {
     this.pieces = getStartingPieces(this);
   }
 
-  @computed get piecesArray() {
-    const board = [...Array(8).keys()].map(() => [...Array<IPiece | null>(8)]);
-    this.pieces.forEach((piece) => {
-      board[piece.position.y - 1][piece.position.x - 1] = piece;
-    });
-    return board;
-  }
-
   @action selectPiece = (piece: IPiece) => {
     this.selectedPiece = piece;
   };
@@ -71,21 +63,20 @@ class ChessGameStore implements IChessGameStore {
   @computed get possibleMoves() {
     if (!this.selectedPiece) return [];
     return this.selectedPiece.possibleMoves
-      .filter((coord) => coord.x >= 1 && coord.x <= 8 && coord.y >= 1 && coord.y <= 8) // filter only valid moves
-      .map(toBoardCoord);
+      .filter(
+        (coord) => coord.position.x >= 1 && coord.position.x <= 8 && coord.position.y >= 1 && coord.position.y <= 8,
+      ) // filter only valid moves
+      .map((item) => ({ ...item, position: toBoardCoord(item.position) }));
   }
 
   @action movePiece = (piece: IPiece, boardCoord: BoardCoord) => {
     const coord = fromBoardCoord(boardCoord);
-    const moved = piece.move(coord);
-
-    if (moved) {
-      const takenPiece = this.pieces.find(
-        (item) => item.id !== piece.id && item.position.x === piece.position.x && item.position.y === piece.position.y,
-      );
-      if (takenPiece) {
-        console.log('Takes!');
-        this.pieces = this.pieces.filter((item) => item.id !== takenPiece.id);
+    const move = piece.move(coord);
+    if (move) {
+      const takes = move.takes;
+      if (takes) {
+        console.log('Takes!', piece, 'x', takes);
+        this.pieces = this.pieces.filter((item) => item.id !== takes.id);
       }
     }
   };
