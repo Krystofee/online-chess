@@ -1,5 +1,6 @@
 import React from 'react';
 import { Image } from 'react-konva';
+import { observer } from 'mobx-react';
 import commonStore from './stores/commonStore';
 import { blackPieces, whitePieces } from './Images';
 
@@ -13,7 +14,7 @@ const Piece = ({ game, piece }: Props) => (
     ref={(ref) => {
       piece.imageRef = ref;
     }}
-    draggable
+    draggable={game.onMove === piece.color}
     x={piece.renderPosition.x}
     y={piece.renderPosition.y}
     width={commonStore.pieceSize}
@@ -27,4 +28,4 @@ const Piece = ({ game, piece }: Props) => (
   />
 );
 
-export default Piece;
+export default observer(Piece);

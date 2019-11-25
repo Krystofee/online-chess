@@ -45,6 +45,7 @@ export function getStartingPieces(game: IChessGameStore): IPiece[] {
 }
 
 class ChessGameStore implements IChessGameStore {
+  @observable onMove: PieceColor = 'W';
   @observable pieces: IPiece[];
   @observable selectedPiece: IPiece | null = null;
 
@@ -53,7 +54,9 @@ class ChessGameStore implements IChessGameStore {
   }
 
   @action selectPiece = (piece: IPiece) => {
-    this.selectedPiece = piece;
+    if (piece.color === this.onMove) {
+      this.selectedPiece = piece;
+    }
   };
 
   @action unselectPiece = () => {
@@ -70,6 +73,8 @@ class ChessGameStore implements IChessGameStore {
   }
 
   @action movePiece = (piece: IPiece, boardCoord: BoardCoord) => {
+    if (this.onMove !== piece.color) return;
+
     const coord = fromBoardCoord(boardCoord);
     const move = piece.move(coord);
     if (move) {
@@ -84,7 +89,14 @@ class ChessGameStore implements IChessGameStore {
       if (nested) {
         nested.piece.move(nested.position, true);
       }
+
+      this.switchOnMove();
     }
+  };
+
+  @action.bound switchOnMove = () => {
+    this.onMove = this.onMove === 'W' ? 'B' : 'W';
+    console.log('on move', this.onMove);
   };
 }
 
