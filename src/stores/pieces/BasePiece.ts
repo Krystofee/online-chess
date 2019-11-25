@@ -31,18 +31,21 @@ class BasePiece implements IPiece {
 
     console.log('moving', this, move);
 
+    let result: null | Move = null;
     if (this.position !== coord && move) {
       this.position = coord;
       this.moveCount += 1;
-      if (this.imageRef) {
-        this.imageRef.to({
-          ...this.renderPosition,
-          duration: 0.1,
-        });
-      }
-      return move;
+      result = move;
     }
-    return null;
+
+    if (this.imageRef) {
+      this.imageRef.to({
+        ...this.renderPosition,
+        duration: 0.1,
+      });
+    }
+
+    return result;
   };
 
   // eslint-disable-next-line class-methods-use-this
