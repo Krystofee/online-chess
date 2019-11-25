@@ -34,22 +34,9 @@ class BasePiece implements IPiece {
     return null;
   };
 
+  // eslint-disable-next-line class-methods-use-this
   @computed get possibleMoves() {
-    console.log(this);
-    return [
-      {
-        position: {
-          x: 3,
-          y: 3,
-        },
-      },
-      {
-        position: {
-          x: 4,
-          y: 4,
-        },
-      },
-    ];
+    return [] as Move[];
   }
 
   @computed get hasMoved() {
