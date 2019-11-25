@@ -75,8 +75,7 @@ class ChessGameStore implements IChessGameStore {
   @action movePiece = (piece: IPiece, boardCoord: BoardCoord) => {
     if (this.onMove !== piece.color) return;
 
-    const coord = fromBoardCoord(boardCoord);
-    const move = piece.move(coord);
+    const move = piece.move(fromBoardCoord(boardCoord));
     if (move) {
       const takes = move.takes;
       if (takes) {
@@ -85,8 +84,8 @@ class ChessGameStore implements IChessGameStore {
       }
 
       const nested = move.nested;
-      console.log('move nested', nested);
       if (nested) {
+        console.log('...move nested', nested);
         nested.piece.move(nested.position, true);
       }
 
@@ -96,7 +95,6 @@ class ChessGameStore implements IChessGameStore {
 
   @action.bound switchOnMove = () => {
     this.onMove = this.onMove === 'W' ? 'B' : 'W';
-    console.log('on move', this.onMove);
   };
 }
 

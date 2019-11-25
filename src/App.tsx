@@ -29,13 +29,16 @@ const App = () => {
       </div>
       <div className="center" style={{ width: commonStore.size, height: commonStore.size }}>
         {isPlaying && chessGame ? (
-          <div className="shadow">
-            <Stage width={size} height={size}>
-              <Board />
-              <PossibleMoves game={chessGame} />
-              <Pieces game={chessGame} />
-            </Stage>
-          </div>
+          <>
+            <p>{chessGame.onMove === 'W' ? 'White' : 'Black'} moves...</p>
+            <div className="shadow">
+              <Stage width={size} height={size}>
+                <Board />
+                <PossibleMoves game={chessGame} />
+                <Pieces game={chessGame} />
+              </Stage>
+            </div>
+          </>
         ) : (
           <div className="text-center" style={{ width: commonStore.size, height: commonStore.size }}>
             <div style={{ paddingTop: 100 }}>
