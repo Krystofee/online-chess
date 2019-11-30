@@ -84,6 +84,40 @@ class Player:
         )
 
 
+class PieceType(GetValueEnum):
+    PAWN = 'P'
+    ROOK = 'R'
+    KNIGHT = 'N'
+    BISHOP = 'B'
+    QUEEN = 'Q'
+    KING = 'K'
+
+
+class Piece:
+    id: str
+    type: PieceType
+    color: PlayerColor
+    x: int
+    y: int
+
+    def __init__(self, game, type, color, x, y):
+        self.id = str(uuid4())
+        self.game = game
+        self.type = type
+        self.color = color
+        self.x = x
+        self.y = y
+
+    def to_serializable_dict(self):
+        return {
+            'id': self.id,
+            'type': self.type.value,
+            'color': self.color.value,
+            'x': self.x,
+            'y': self.y,
+        }
+
+
 class GameState(GetValueEnum):
     WAITING = 'WAITING'
     PLAYING = 'PLAYING'
@@ -95,16 +129,47 @@ class ChessGame:
 
     players: dict
 
-    board: List[List[str or None]]
+    board: List[Piece]
     on_move: PlayerColor or None = None
 
     def __init__(self):
         self.id = uuid4()
         self.state = GameState.WAITING
         self.players = {}
-        self.board = []
-        for _ in range(8):
-            self.board.append([None] * 8)
+        self.board = [
+            Piece(self, PieceType.ROOK, PlayerColor.BLACK, x=1, y=8),
+            Piece(self, PieceType.KNIGHT, PlayerColor.BLACK, x=2, y=8),
+            Piece(self, PieceType.BISHOP, PlayerColor.BLACK, x=3, y=8),
+            Piece(self, PieceType.QUEEN, PlayerColor.BLACK, x=4, y=8),
+            Piece(self, PieceType.KING, PlayerColor.BLACK, x=5, y=8),
+            Piece(self, PieceType.BISHOP, PlayerColor.BLACK, x=6, y=8),
+            Piece(self, PieceType.KNIGHT, PlayerColor.BLACK, x=7, y=8),
+            Piece(self, PieceType.ROOK, PlayerColor.BLACK, x=8, y=8),
+            Piece(self, PieceType.PAWN, PlayerColor.BLACK, x=1, y=7),
+            Piece(self, PieceType.PAWN, PlayerColor.BLACK, x=2, y=7),
+            Piece(self, PieceType.PAWN, PlayerColor.BLACK, x=3, y=7),
+            Piece(self, PieceType.PAWN, PlayerColor.BLACK, x=4, y=7),
+            Piece(self, PieceType.PAWN, PlayerColor.BLACK, x=5, y=7),
+            Piece(self, PieceType.PAWN, PlayerColor.BLACK, x=6, y=7),
+            Piece(self, PieceType.PAWN, PlayerColor.BLACK, x=7, y=7),
+            Piece(self, PieceType.PAWN, PlayerColor.BLACK, x=8, y=7),
+            Piece(self, PieceType.PAWN, PlayerColor.WHITE, x=1, y=2),
+            Piece(self, PieceType.PAWN, PlayerColor.WHITE, x=2, y=2),
+            Piece(self, PieceType.PAWN, PlayerColor.WHITE, x=3, y=2),
+            Piece(self, PieceType.PAWN, PlayerColor.WHITE, x=4, y=2),
+            Piece(self, PieceType.PAWN, PlayerColor.WHITE, x=5, y=2),
+            Piece(self, PieceType.PAWN, PlayerColor.WHITE, x=6, y=2),
+            Piece(self, PieceType.PAWN, PlayerColor.WHITE, x=7, y=2),
+            Piece(self, PieceType.PAWN, PlayerColor.WHITE, x=8, y=2),
+            Piece(self, PieceType.ROOK, PlayerColor.WHITE, x=1, y=1),
+            Piece(self, PieceType.BISHOP, PlayerColor.WHITE, x=2, y=1),
+            Piece(self, PieceType.KNIGHT, PlayerColor.WHITE, x=3, y=1),
+            Piece(self, PieceType.QUEEN, PlayerColor.WHITE, x=4, y=1),
+            Piece(self, PieceType.KING, PlayerColor.WHITE, x=5, y=1),
+            Piece(self, PieceType.BISHOP, PlayerColor.WHITE, x=6, y=1),
+            Piece(self, PieceType.KNIGHT, PlayerColor.WHITE, x=7, y=1),
+            Piece(self, PieceType.ROOK, PlayerColor.WHITE, x=8, y=1),
+        ]
 
     def connect(self, websocket: WebSocketServerProtocol, color):
         print('connect player', color, websocket)
@@ -133,7 +198,11 @@ class ChessGame:
         if websocket not in self.players.keys():
             return
 
-        # self.board[move_to['y'] - 1][move_to['x'] - 1] = [move_from['y'] - 1][move_from['x'] - 1]
+        for piece in self.board:
+            if piece.x == move_from['x'] and piece.y == move_from['y']:
+                piece.x = move_to['x']
+                piece.y = move_to['y']
+
         self.switch_on_move()
         self.send_state()
 
@@ -153,7 +222,7 @@ class ChessGame:
             'id': str(self.id),
             'state': self.state.value,
             'players': [str(x.id) for x in self.players.values()],
-            'board': self.board,
+            'board': [x.to_serializable_dict() for x in self.board],
             'on_move': self.on_move.value if self.on_move else None,
         }
 

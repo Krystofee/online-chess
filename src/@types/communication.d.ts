@@ -10,11 +10,19 @@ declare type ServerPlayerState = {
 
 declare type GameState = 'WAITING' | 'PLAYING';
 
+declare type SerializedPiece = {
+  id: string;
+  type: PieceType;
+  color: PieceColor;
+  x: number;
+  y: number;
+};
+
 declare type ServerGameState = {
   id: string;
   state: GameState;
   players: string[];
-  board: (PieceType | null)[][];
+  board: SerializedPiece[];
   on_move: PieceColor;
 };
 

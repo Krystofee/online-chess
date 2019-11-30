@@ -38,14 +38,18 @@ class BasePiece implements IPiece {
       result = move;
     }
 
+    this.render();
+
+    return result;
+  };
+
+  @action render = () => {
     if (this.imageRef) {
       this.imageRef.to({
         ...this.renderPosition,
         duration: 0.1,
       });
     }
-
-    return result;
   };
 
   // eslint-disable-next-line class-methods-use-this

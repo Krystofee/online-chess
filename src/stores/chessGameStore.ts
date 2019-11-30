@@ -77,6 +77,9 @@ class ChessGameStore implements IChessGameStore {
         this.gameState = payload.state;
         this.onMove = payload.on_move;
         this.canMove = true;
+        this.pieces = payload.board.map((piece) =>
+          this.updatePiece(piece.id, piece.color, piece.type, piece.x, piece.y),
+        );
         console.log('... Started game', payload);
       } else if (data[0] === 'PLAYER_STATE') {
         console.log('...player state', data[1]);
@@ -87,6 +90,41 @@ class ChessGameStore implements IChessGameStore {
       }
     };
   }
+
+  @action updatePiece = (id: string, color: PieceColor, type: PieceType, x: number, y: number) => {
+    let piece = this.pieces.find((item) => item.id === id);
+
+    const getPieceClass = (pieceType: PieceType) => {
+      switch (pieceType) {
+        case 'B':
+          return Bishop;
+        case 'N':
+          return Knight;
+        case 'R':
+          return Rook;
+        case 'Q':
+          return Queen;
+        case 'K':
+          return King;
+        default:
+          return Pawn;
+      }
+    };
+
+    if (!piece) {
+      const PieceClass = getPieceClass(type);
+      piece = new PieceClass(this, color, { x, y });
+    }
+
+    piece.id = id;
+    piece.position = { x, y };
+    piece.color = color;
+    piece.type = type;
+
+    piece.render();
+
+    return piece;
+  };
 
   @action startGame = () => {
     if (!this.socketReady) {
