@@ -5,7 +5,7 @@ import King from './pieces/King';
 import Bishop from './pieces/Bishop';
 import Knight from './pieces/Knight';
 import Pawn from './pieces/Pawn';
-import { toBoardCoord, fromBoardCoord } from './helpers';
+import { toBoardCoord, fromBoardCoord, getWebsocketMessage } from './helpers';
 
 export function getStartingPieces(game: IChessGameStore): IPiece[] {
   return [
@@ -45,16 +45,59 @@ export function getStartingPieces(game: IChessGameStore): IPiece[] {
 }
 
 class ChessGameStore implements IChessGameStore {
+  @observable color: PieceColor | null = null;
+  @observable gameState: GameState = 'WAITING';
+  @observable playerId: string | null = null;
+  @observable playerState: PlayerState = 'INIT';
   @observable onMove: PieceColor = 'W';
+  @observable canMove: boolean = false;
   @observable pieces: IPiece[];
   @observable selectedPiece: IPiece | null = null;
+  @observable socket: WebSocket;
+  @observable socketReady: boolean = false;
 
   constructor() {
     this.pieces = getStartingPieces(this);
+    this.socket = new WebSocket('ws://localhost:8765');
+
+    this.socket.onopen = () => {
+      this.socketReady = true;
+    };
+
+    this.socket.onmessage = (event) => {
+      const data: ServerMessage = JSON.parse(event.data);
+
+      if (data[0] === 'PRE_GAME') {
+        const payload = data[1] as ServerPreGame;
+        this.color = payload.color;
+        this.playerId = payload.id;
+      } else if (data[0] === 'GAME_STATE') {
+        console.log('...game state', data[1]);
+        const payload = data[1] as ServerGameState;
+        this.gameState = payload.state;
+        this.onMove = payload.on_move;
+        this.canMove = true;
+        console.log('... Started game', payload);
+      } else if (data[0] === 'PLAYER_STATE') {
+        console.log('...player state', data[1]);
+        const payload = data[1] as ServerPlayerState;
+        if (payload.id === this.playerId) {
+          this.playerState = payload.state;
+        }
+      }
+    };
   }
 
+  @action startGame = () => {
+    if (!this.socketReady) {
+      return;
+    }
+
+    this.socket.send(getWebsocketMessage('CONNECT', { color: this.color }));
+  };
+
   @action selectPiece = (piece: IPiece) => {
-    if (piece.color === this.onMove) {
+    if (this.canMove && piece.color === this.onMove) {
       this.selectedPiece = piece;
     }
   };
@@ -73,8 +116,9 @@ class ChessGameStore implements IChessGameStore {
   }
 
   @action movePiece = (piece: IPiece, boardCoord: BoardCoord) => {
-    if (this.onMove !== piece.color) return;
+    if (this.canMove && this.onMove !== piece.color) return;
 
+    const previousPosition = piece.position;
     const move = piece.move(fromBoardCoord(boardCoord));
     if (move) {
       const takes = move.takes;
@@ -89,12 +133,24 @@ class ChessGameStore implements IChessGameStore {
         nested.piece.move(nested.position, true);
       }
 
-      this.switchOnMove();
-    }
-  };
+      const moveToObject: (move?: Move) => object | null = (move?: Move) =>
+        move
+          ? {
+              from: {
+                x: previousPosition.x,
+                y: previousPosition.y,
+              },
+              to: {
+                x: move.position.x,
+                y: move.position.y,
+              },
+              nested: moveToObject(move.nested),
+            }
+          : null;
 
-  @action.bound switchOnMove = () => {
-    this.onMove = this.onMove === 'W' ? 'B' : 'W';
+      this.socket.send(getWebsocketMessage('MOVE', moveToObject(move) as object));
+      this.canMove = false;
+    }
   };
 }
 

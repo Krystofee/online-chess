@@ -11,6 +11,12 @@ declare type BoardCoord = {
 declare interface IChessGameStore {
   pieces: IPiece[];
   onMove: PieceColor;
+  canMove: boolean;
+  gameState: GameState;
+  playerId: string | null;
+  playerState: PlayerState;
+
+  startGame: () => void;
 
   selectPiece: (piece: Piece) => void;
   unselectPiece: () => void;

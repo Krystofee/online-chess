@@ -1,6 +1,7 @@
 import asyncio
 import enum
 import json
+import random
 from asyncio import sleep
 from typing import List
 from uuid import uuid4, UUID
@@ -25,6 +26,7 @@ class ClientAction(GetValueEnum):
 
 
 class ServerAction(enum.Enum):
+    PRE_GAME = 'PRE_GAME'
     PLAYER_STATE = 'PLAYER_STATE'
     GAME_STATE = 'GAME_STATE'
 
@@ -44,16 +46,18 @@ class PlayerColor(GetValueEnum):
 
 
 class Player:
-    id: UUID
     socket: WebSocketServerProtocol
     state: PlayerState
     color: PlayerColor
 
     def __init__(self, color: PlayerColor, socket: WebSocketServerProtocol):
-        self.id = uuid4()
         self.socket = socket
         self.color = color
         self.state = PlayerState.CONNECTED
+
+    @property
+    def id(self):
+        return id(self.socket)
 
     def set_connected(self):
         self.state = PlayerState.CONNECTED
@@ -72,8 +76,8 @@ class Player:
             get_message(
                 ServerAction.PLAYER_STATE,
                 {
-                    'id': str(self.id),
-                    'player': self.color.value,
+                    'id': str(id(self.socket)),
+                    'color': self.color.value,
                     'state': self.state.value,
                 }
             )
@@ -116,7 +120,7 @@ class ChessGame:
         self.send_state()
 
     def can_start(self):
-        return not any([player.can_start for player in self.players.values()])
+        return len(self.players.values()) == 2 and not any([player.can_start for player in self.players.values()])
 
     def start_game(self):
         self.on_move = PlayerColor.WHITE
@@ -124,6 +128,14 @@ class ChessGame:
 
         for player in self.players.values():
             player.set_playing()
+
+    def move(self, websocket: WebSocketServerProtocol, move_from, move_to):
+        if websocket not in self.players.keys():
+            return
+
+        # self.board[move_to['y'] - 1][move_to['x'] - 1] = [move_from['y'] - 1][move_from['x'] - 1]
+        self.switch_on_move()
+        self.send_state()
 
     def switch_on_move(self):
         self.on_move = PlayerColor.WHITE if self.on_move == PlayerColor.BLACK else PlayerColor.BLACK
@@ -137,13 +149,13 @@ class ChessGame:
         )
 
     def to_serializable_dict(self):
-        return json.dumps({
+        return {
             'id': str(self.id),
             'state': self.state.value,
             'players': [str(x.id) for x in self.players.values()],
             'board': self.board,
             'on_move': self.on_move.value if self.on_move else None,
-        })
+        }
 
 
 connected = set()
@@ -167,10 +179,29 @@ async def consumer_handler(websocket, path):
         if action == ClientAction.CONNECT:
             color = data.get('color')
             game.connect(websocket, color)
+        if action == ClientAction.MOVE:
+            move_from = data.get('from')
+            move_to = data.get('to')
+            game.move(websocket, move_from, move_to)
 
 
-async def producer_handler(websocket, path):
-    global produced_message_queue
+connect_player_colors = [PlayerColor.WHITE.value, PlayerColor.BLACK.value]
+random.shuffle(connect_player_colors)
+
+
+async def producer_handler(websocket: WebSocketServerProtocol, path: str):
+    global produced_message_queue, connect_player_colors
+
+    player_id = str(id(websocket))
+    color = None
+    if connect_player_colors:
+        color = connect_player_colors.pop()
+    await websocket.send(
+        get_message(
+            ServerAction.PRE_GAME,
+            {'color': color , 'id': player_id}
+        )
+    )
 
     while True:
         await sleep(0.1)

@@ -81,3 +81,7 @@ export const generateStraightMoves = (piece: IPiece, allPieces: IPiece[], repeat
     ],
     repeat,
   );
+
+export const getWebsocketMessage = (action: ClientAction, data: object) => {
+  return JSON.stringify([action, data]);
+};
