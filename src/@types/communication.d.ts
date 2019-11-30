@@ -1,4 +1,4 @@
-declare type ServerAction = 'PLAYER_STATE' | 'GAME_STATE' | 'PRE_GAME';
+declare type ServerAction = 'PLAYER_STATE' | 'GAME_STATE';
 
 declare type PlayerState = 'INIT' | 'CONNECTED' | 'PLAYING';
 
@@ -35,4 +35,4 @@ declare type ServerData = ServerPlayerState | ServerGameState | ServerPreGame;
 
 declare type ServerMessage = [ServerAction, ServerData];
 
-declare type ClientAction = 'CONNECT' | 'MOVE';
+declare type ClientAction = 'CONNECT' | 'MOVE' | 'IDENTIFY';

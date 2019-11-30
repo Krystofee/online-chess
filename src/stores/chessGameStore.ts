@@ -1,4 +1,5 @@
 import { observable, computed, action } from 'mobx';
+import { uuid } from 'uuidv4';
 import Rook from './pieces/Rook';
 import Queen from './pieces/Queen';
 import King from './pieces/King';
@@ -7,44 +8,8 @@ import Knight from './pieces/Knight';
 import Pawn from './pieces/Pawn';
 import { toBoardCoord, fromBoardCoord, getWebsocketMessage } from './helpers';
 
-export function getStartingPieces(game: IChessGameStore): IPiece[] {
-  return [
-    new Rook(game, 'B', { x: 1, y: 8 }),
-    new Knight(game, 'B', { x: 2, y: 8 }),
-    new Bishop(game, 'B', { x: 3, y: 8 }),
-    new Queen(game, 'B', { x: 4, y: 8 }),
-    new King(game, 'B', { x: 5, y: 8 }),
-    new Bishop(game, 'B', { x: 6, y: 8 }),
-    new Knight(game, 'B', { x: 7, y: 8 }),
-    new Rook(game, 'B', { x: 8, y: 8 }),
-    new Pawn(game, 'B', { x: 1, y: 7 }),
-    new Pawn(game, 'B', { x: 2, y: 7 }),
-    new Pawn(game, 'B', { x: 3, y: 7 }),
-    new Pawn(game, 'B', { x: 4, y: 7 }),
-    new Pawn(game, 'B', { x: 5, y: 7 }),
-    new Pawn(game, 'B', { x: 6, y: 7 }),
-    new Pawn(game, 'B', { x: 7, y: 7 }),
-    new Pawn(game, 'B', { x: 8, y: 7 }),
-    new Pawn(game, 'W', { x: 1, y: 2 }),
-    new Pawn(game, 'W', { x: 2, y: 2 }),
-    new Pawn(game, 'W', { x: 3, y: 2 }),
-    new Pawn(game, 'W', { x: 4, y: 2 }),
-    new Pawn(game, 'W', { x: 5, y: 2 }),
-    new Pawn(game, 'W', { x: 6, y: 2 }),
-    new Pawn(game, 'W', { x: 7, y: 2 }),
-    new Pawn(game, 'W', { x: 8, y: 2 }),
-    new Rook(game, 'W', { x: 1, y: 1 }),
-    new Knight(game, 'W', { x: 2, y: 1 }),
-    new Bishop(game, 'W', { x: 3, y: 1 }),
-    new Queen(game, 'W', { x: 4, y: 1 }),
-    new King(game, 'W', { x: 5, y: 1 }),
-    new Bishop(game, 'W', { x: 6, y: 1 }),
-    new Knight(game, 'W', { x: 7, y: 1 }),
-    new Rook(game, 'W', { x: 8, y: 1 }),
-  ];
-}
-
 class ChessGameStore implements IChessGameStore {
+  @observable deviceId: string;
   @observable color: PieceColor | null = null;
   @observable gameState: GameState = 'WAITING';
   @observable playerId: string | null = null;
@@ -57,21 +22,26 @@ class ChessGameStore implements IChessGameStore {
   @observable socketReady: boolean = false;
 
   constructor() {
-    this.pieces = getStartingPieces(this);
+    this.pieces = [];
     this.socket = new WebSocket('ws://localhost:8765');
+
+    this.deviceId = uuid();
+    const storedUserId = window.localStorage.getItem('user');
+    if (storedUserId) {
+      this.deviceId = storedUserId;
+    } else {
+      window.localStorage.setItem('user', this.deviceId);
+    }
 
     this.socket.onopen = () => {
       this.socketReady = true;
+      this.socket.send(getWebsocketMessage('IDENTIFY', { id: this.deviceId }));
     };
 
     this.socket.onmessage = (event) => {
       const data: ServerMessage = JSON.parse(event.data);
 
-      if (data[0] === 'PRE_GAME') {
-        const payload = data[1] as ServerPreGame;
-        this.color = payload.color;
-        this.playerId = payload.id;
-      } else if (data[0] === 'GAME_STATE') {
+      if (data[0] === 'GAME_STATE') {
         console.log('...game state', data[1]);
         const payload = data[1] as ServerGameState;
         this.gameState = payload.state;
@@ -84,7 +54,8 @@ class ChessGameStore implements IChessGameStore {
       } else if (data[0] === 'PLAYER_STATE') {
         console.log('...player state', data[1]);
         const payload = data[1] as ServerPlayerState;
-        if (payload.id === this.playerId) {
+        if (payload.id === this.deviceId) {
+          this.color = payload.color;
           this.playerState = payload.state;
         }
       }
@@ -131,7 +102,7 @@ class ChessGameStore implements IChessGameStore {
       return;
     }
 
-    this.socket.send(getWebsocketMessage('CONNECT', { color: this.color }));
+    this.socket.send(getWebsocketMessage('CONNECT', { id: this.deviceId }));
   };
 
   @action selectPiece = (piece: IPiece) => {
@@ -182,6 +153,13 @@ class ChessGameStore implements IChessGameStore {
                 x: move.position.x,
                 y: move.position.y,
               },
+              ...(move.takes
+                ? {
+                    takes: {
+                      ...move.takes.position,
+                    },
+                  }
+                : undefined),
               nested: moveToObject(move.nested),
             }
           : null;

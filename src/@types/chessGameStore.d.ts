@@ -9,6 +9,7 @@ declare type BoardCoord = {
 };
 
 declare interface IChessGameStore {
+  deviceId: string;
   pieces: IPiece[];
   onMove: PieceColor;
   canMove: boolean;

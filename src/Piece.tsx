@@ -20,6 +20,10 @@ const Piece = ({ game, piece }: Props) => (
     width={commonStore.pieceSize}
     height={commonStore.pieceSize}
     image={piece.color === 'B' ? blackPieces[piece.type] : whitePieces[piece.type]}
+    onClick={() => {
+      game.unselectPiece();
+      game.selectPiece(piece);
+    }}
     onDragStart={() => game.selectPiece(piece)}
     onDragEnd={(evt) => {
       game.movePiece(piece, { x: evt.target.x(), y: evt.target.y() });

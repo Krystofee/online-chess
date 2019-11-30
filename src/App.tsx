@@ -53,7 +53,7 @@ const App = () => {
                   <p>... waiting for all players to join</p>
                 ) : (
                   <button className="pure-button pure-button-primary button-xlarge" type="button" onClick={startGame}>
-                    Join as {chessGame.color === 'B' ? 'black' : 'white'}
+                    Join
                   </button>
                 )}
               </div>

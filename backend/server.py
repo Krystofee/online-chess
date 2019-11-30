@@ -3,7 +3,7 @@ import enum
 import json
 import random
 from asyncio import sleep
-from typing import List
+from typing import List, Dict
 from uuid import uuid4, UUID
 
 import websockets
@@ -21,12 +21,11 @@ class GetValueEnum(enum.Enum):
 
 class ClientAction(GetValueEnum):
     CONNECT = 'CONNECT'
-    PLAY = 'PLAY'
     MOVE = 'MOVE'
+    IDENTIFY = 'IDENTIFY'
 
 
 class ServerAction(enum.Enum):
-    PRE_GAME = 'PRE_GAME'
     PLAYER_STATE = 'PLAYER_STATE'
     GAME_STATE = 'GAME_STATE'
 
@@ -46,18 +45,20 @@ class PlayerColor(GetValueEnum):
 
 
 class Player:
+    user_id: str
     socket: WebSocketServerProtocol
     state: PlayerState
     color: PlayerColor
 
-    def __init__(self, color: PlayerColor, socket: WebSocketServerProtocol):
+    def __init__(self, user_id, color: PlayerColor, socket: WebSocketServerProtocol):
+        self.user_id = user_id
         self.socket = socket
         self.color = color
         self.state = PlayerState.CONNECTED
 
     @property
     def id(self):
-        return id(self.socket)
+        return self.user_id
 
     def set_connected(self):
         self.state = PlayerState.CONNECTED
@@ -73,15 +74,51 @@ class Player:
 
     def send_state(self):
         produced_message_queue.append(
-            get_message(
-                ServerAction.PLAYER_STATE,
-                {
-                    'id': str(id(self.socket)),
-                    'color': self.color.value,
-                    'state': self.state.value,
-                }
+            (
+                self.socket,
+                get_message(
+                    ServerAction.PLAYER_STATE,
+                    {
+                        'id': str(self.id),
+                        'color': self.color.value,
+                        'state': self.state.value,
+                    }
+                )
             )
         )
+
+
+class Coord:
+    x: int
+    y: int
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    @staticmethod
+    def from_dict(data: dict):
+        return Coord(data['x'], data['y'])
+
+
+class Move:
+    move_from: Coord
+    move_to: Coord
+    takes: Coord or None = None
+    nested: 'Move' or None = None
+
+    def __init__(self, move_from, move_to, takes=None, nested=None):
+        self.move_from = Coord.from_dict(move_from)
+        self.move_to = Coord.from_dict(move_to)
+
+        if takes:
+            self.takes = Coord.from_dict(takes)
+        if nested:
+            self.nested = Move.from_dict(nested)
+
+    @staticmethod
+    def from_dict(data: dict):
+        return Move(data['from'], data['to'], data.get('takes'), data.get('nested'))
 
 
 class PieceType(GetValueEnum):
@@ -123,11 +160,15 @@ class GameState(GetValueEnum):
     PLAYING = 'PLAYING'
 
 
+connect_player_colors = [PlayerColor.WHITE, PlayerColor.BLACK]
+random.shuffle(connect_player_colors)
+
+
 class ChessGame:
     id: UUID
     state: GameState
 
-    players: dict
+    players: Dict[str, Player]
 
     board: List[Piece]
     on_move: PlayerColor or None = None
@@ -171,11 +212,22 @@ class ChessGame:
             Piece(self, PieceType.ROOK, PlayerColor.WHITE, x=8, y=1),
         ]
 
-    def connect(self, websocket: WebSocketServerProtocol, color):
-        print('connect player', color, websocket)
-        color = PlayerColor.get_value(color)
-        player = Player(color, websocket)
-        self.players[websocket] = player
+    def identify(self, websocket: WebSocketServerProtocol, user_id: str):
+        player = self.players.get(user_id)
+
+        if player:
+            player.socket = websocket
+            player.send_state()
+            game.send_state()
+
+    def connect(self, websocket: WebSocketServerProtocol, user_id: str):
+        if not connect_player_colors:
+            return
+
+        color = connect_player_colors.pop()
+        print('connect player', websocket, color)
+        player = Player(user_id, color, websocket)
+        self.players[user_id] = player
 
         if self.can_start():
             self.start_game()
@@ -194,14 +246,28 @@ class ChessGame:
         for player in self.players.values():
             player.set_playing()
 
-    def move(self, websocket: WebSocketServerProtocol, move_from, move_to):
-        if websocket not in self.players.keys():
+    def move(self, websocket: WebSocketServerProtocol, move: Move):
+        if websocket not in [x.socket for x in self.players.values()]:
             return
 
+        # TODO: ...still no validation implemented
+        if move.takes:
+            self.board = list(filter(
+                lambda piece: not (piece.x == move.takes.x and piece.y == move.takes.y),
+                self.board
+            ))
+
         for piece in self.board:
-            if piece.x == move_from['x'] and piece.y == move_from['y']:
-                piece.x = move_to['x']
-                piece.y = move_to['y']
+            if piece.x == move.move_from.x and piece.y == move.move_from.y:
+                piece.x = move.move_to.x
+                piece.y = move.move_to.y
+
+        if move.nested:
+            nested = move.nested
+            for piece in self.board:
+                if piece.x == nested.move_from.x and piece.y == nested.move_from.y:
+                    piece.x = nested.move_to.x
+                    piece.y = nested.move_to.y
 
         self.switch_on_move()
         self.send_state()
@@ -211,9 +277,12 @@ class ChessGame:
 
     def send_state(self):
         produced_message_queue.append(
-            get_message(
-                ServerAction.GAME_STATE,
-                self.to_serializable_dict()
+            (
+                None,
+                get_message(
+                    ServerAction.GAME_STATE,
+                    self.to_serializable_dict()
+                )
             )
         )
 
@@ -221,7 +290,7 @@ class ChessGame:
         return {
             'id': str(self.id),
             'state': self.state.value,
-            'players': [str(x.id) for x in self.players.values()],
+            # 'players': [str(x.id) for x in self.players.values()],
             'board': [x.to_serializable_dict() for x in self.board],
             'on_move': self.on_move.value if self.on_move else None,
         }
@@ -245,40 +314,35 @@ async def consumer_handler(websocket, path):
         action = ClientAction.get_value(action_value)
         data = parsed_message[1]
 
+        if action == ClientAction.IDENTIFY:
+            user_id = data.get('id')
+            game.identify(websocket, user_id)
+
         if action == ClientAction.CONNECT:
-            color = data.get('color')
-            game.connect(websocket, color)
+            user_id = data.get('id')
+            game.connect(websocket, user_id)
+
         if action == ClientAction.MOVE:
-            move_from = data.get('from')
-            move_to = data.get('to')
-            game.move(websocket, move_from, move_to)
+            move = Move.from_dict(data)
+            game.move(websocket, move)
 
 
-connect_player_colors = [PlayerColor.WHITE.value, PlayerColor.BLACK.value]
-random.shuffle(connect_player_colors)
 
 
 async def producer_handler(websocket: WebSocketServerProtocol, path: str):
     global produced_message_queue, connect_player_colors
 
-    player_id = str(id(websocket))
-    color = None
-    if connect_player_colors:
-        color = connect_player_colors.pop()
-    await websocket.send(
-        get_message(
-            ServerAction.PRE_GAME,
-            {'color': color , 'id': player_id}
-        )
-    )
-
     while True:
         await sleep(0.1)
 
-        for message in produced_message_queue:
+        for socket, message in produced_message_queue:
             print('...sending message', message)
-            for player_socket in game.players.keys():
-                await player_socket.send(message)
+
+            if not socket:
+                for player in game.players.values():
+                    await player.socket.send(message)
+            else:
+                await socket.send(message)
 
         produced_message_queue = []
 
