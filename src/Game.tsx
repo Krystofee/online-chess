@@ -33,30 +33,50 @@ const App = ({
   const size = commonStore.size;
 
   return (
-    <div className="center" style={{ width: 800 }}>
+    <div className="center" style={{ width: size }}>
       <div className="center">
         <h1>Chess</h1>
       </div>
 
       {!chessGame.socketReady ? (
-        <div className="center" style={{ width: commonStore.size, height: commonStore.size }}>
+        <div className="center">
           <p>... connecting</p>
         </div>
       ) : (
-        <div className="center" style={{ width: commonStore.size, height: commonStore.size }}>
+        <div className="center">
           {chessGame.gameState === 'PLAYING' ? (
             <>
               <p>{chessGame.onMove === chessGame.color ? "It's your turn!" : 'Waiting for opponent...'}</p>
-              <div className="shadow">
-                <Stage width={size} height={size}>
-                  <Board invert={chessGame.invertBoard} />
-                  <PossibleMoves game={chessGame} />
-                  <Pieces game={chessGame} />
-                </Stage>
+              <div style={{ position: 'relative', display: 'flex', flexDirection: 'row' }}>
+                <div className="shadow" style={{ width: size, height: size }}>
+                  <Stage width={size} height={size}>
+                    <Board invert={chessGame.invertBoard} />
+                    <PossibleMoves game={chessGame} />
+                    <Pieces game={chessGame} />
+                  </Stage>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <div
+                    style={{
+                      padding: '1em',
+                      backgroundColor: chessGame.onMove === chessGame.color ? undefined : '#ff003b24',
+                    }}
+                  >
+                    08:51
+                  </div>
+                  <div
+                    style={{
+                      padding: '1em',
+                      backgroundColor: chessGame.onMove === chessGame.color ? '#ff003b24' : undefined,
+                    }}
+                  >
+                    08:51
+                  </div>
+                </div>
               </div>
             </>
           ) : (
-            <div className="text-center" style={{ width: commonStore.size, height: commonStore.size }}>
+            <div className="text-center">
               <div style={{ paddingTop: 100 }}>
                 {chessGame.playerState === 'CONNECTED' ? (
                   <div style={{ padding: '2em', backgroundColor: '#00000010' }}>
