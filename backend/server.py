@@ -1,5 +1,6 @@
 import asyncio
 import enum
+import os
 import random
 from asyncio import sleep
 
@@ -8,6 +9,8 @@ import websockets
 from typing import Dict, List
 from uuid import UUID, uuid4
 from websockets import WebSocketServerProtocol
+
+PORT = os.environ['PORT']
 
 
 class GetValueEnum(enum.Enum):
@@ -378,7 +381,7 @@ async def handler(websocket, path):
 
 
 print('Starting server...')
-start_server = websockets.serve(handler, "localhost", 8000)
+start_server = websockets.serve(handler, "0.0.0.0", PORT)
 
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()

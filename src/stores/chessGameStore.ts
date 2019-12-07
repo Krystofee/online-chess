@@ -25,7 +25,7 @@ class ChessGameStore implements IChessGameStore {
   constructor(id: string) {
     this.id = id;
     this.pieces = [];
-    this.socket = new WebSocket(`ws://localhost:8000/${this.id}`);
+    this.socket = new WebSocket(`ws://pichess.herokuapp.com/0.0.0.0/${this.id}`);
 
     this.deviceId = uuid();
     const storedUserId = window.localStorage.getItem(this.id);
