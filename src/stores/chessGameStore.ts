@@ -9,10 +9,10 @@ import Pawn from './pieces/Pawn';
 import { toBoardCoord, fromBoardCoord, getWebsocketMessage } from './helpers';
 
 class ChessGameStore implements IChessGameStore {
+  @observable id: string;
   @observable deviceId: string;
   @observable color: PieceColor | null = null;
   @observable gameState: GameState = 'WAITING';
-  @observable playerId: string | null = null;
   @observable playerState: PlayerState = 'INIT';
   @observable onMove: PieceColor = 'W';
   @observable canMove: boolean = false;
@@ -21,9 +21,10 @@ class ChessGameStore implements IChessGameStore {
   @observable socket: WebSocket;
   @observable socketReady: boolean = false;
 
-  constructor() {
+  constructor(id: string) {
+    this.id = id;
     this.pieces = [];
-    this.socket = new WebSocket('ws://localhost:8765/a1ecb092-707e-4a29-8770-c97a3f4b36ab');
+    this.socket = new WebSocket(`ws://localhost:8765/${this.id}`);
 
     this.deviceId = uuid();
     const storedUserId = window.localStorage.getItem('user');
