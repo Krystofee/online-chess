@@ -14,7 +14,7 @@ const Piece = ({ game, piece }: Props) => (
     ref={(ref) => {
       piece.imageRef = ref;
     }}
-    draggable={game.onMove === piece.color}
+    draggable={game.onMove === piece.color && game.color === piece.color}
     x={piece.renderPosition.x}
     y={piece.renderPosition.y}
     width={commonStore.pieceSize}

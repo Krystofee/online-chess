@@ -51,7 +51,6 @@ class ChessGameStore implements IChessGameStore {
         this.pieces = payload.board.map((piece) =>
           this.updatePiece(piece.id, piece.color, piece.type, piece.x, piece.y),
         );
-        console.log('... Started game', payload);
       } else if (data[0] === 'PLAYER_STATE') {
         console.log('...player state', data[1]);
         const payload = data[1] as ServerPlayerState;
@@ -107,7 +106,7 @@ class ChessGameStore implements IChessGameStore {
   };
 
   @action selectPiece = (piece: IPiece) => {
-    if (this.canMove && piece.color === this.onMove) {
+    if (this.canMove && piece.color === this.onMove && this.color === piece.color) {
       this.selectedPiece = piece;
     }
   };
@@ -126,7 +125,9 @@ class ChessGameStore implements IChessGameStore {
   }
 
   @action movePiece = (piece: IPiece, boardCoord: BoardCoord) => {
-    if (this.canMove && this.onMove !== piece.color) return;
+    if (!this.canMove || this.onMove !== piece.color || this.color !== piece.color) return;
+
+    console.log('move', this.color, this.onMove);
 
     const previousPosition = piece.position;
     const move = piece.move(fromBoardCoord(boardCoord));
