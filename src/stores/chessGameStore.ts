@@ -7,7 +7,7 @@ import King from './pieces/King';
 import Bishop from './pieces/Bishop';
 import Knight from './pieces/Knight';
 import Pawn from './pieces/Pawn';
-import { toBoardCoord, fromBoardCoord, getWebsocketMessage } from './helpers';
+import { toBoardCoord, fromBoardCoord, getWebsocketMessage, invertY } from './helpers';
 
 class ChessGameStore implements IChessGameStore {
   @observable id: string;
@@ -28,11 +28,11 @@ class ChessGameStore implements IChessGameStore {
     this.socket = new WebSocket(`ws://localhost:8765/${this.id}`);
 
     this.deviceId = uuid();
-    const storedUserId = window.localStorage.getItem('user');
+    const storedUserId = window.localStorage.getItem(this.id);
     if (storedUserId) {
       this.deviceId = storedUserId;
     } else {
-      window.localStorage.setItem('user', this.deviceId);
+      window.localStorage.setItem(this.id, this.deviceId);
     }
 
     this.socket.onopen = () => {
@@ -116,13 +116,20 @@ class ChessGameStore implements IChessGameStore {
     this.selectedPiece = null;
   };
 
+  @computed get invertBoard() {
+    return this.color === 'W';
+  }
+
   @computed get possibleMoves() {
     if (!this.selectedPiece) return [];
     return this.selectedPiece.possibleMoves
       .filter(
         (coord) => coord.position.x >= 1 && coord.position.x <= 8 && coord.position.y >= 1 && coord.position.y <= 8,
       ) // filter only valid moves
-      .map((item) => ({ ...item, position: toBoardCoord(item.position) }));
+      .map((item) => ({
+        ...item,
+        position: this.invertBoard ? invertY(toBoardCoord(item.position)) : toBoardCoord(item.position),
+      }));
   }
 
   @action movePiece = (piece: IPiece, boardCoord: BoardCoord) => {
@@ -131,7 +138,7 @@ class ChessGameStore implements IChessGameStore {
     console.log('move', this.color, this.onMove);
 
     const previousPosition = piece.position;
-    const move = piece.move(fromBoardCoord(boardCoord));
+    const move = piece.move(fromBoardCoord(this.invertBoard ? invertY(boardCoord) : boardCoord));
     if (move) {
       const takes = move.takes;
       if (takes) {

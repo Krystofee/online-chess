@@ -9,8 +9,6 @@ from typing import Dict, List
 from uuid import UUID, uuid4
 from websockets import WebSocketServerProtocol
 
-produced_message_queue = []
-
 
 class GetValueEnum(enum.Enum):
 
@@ -45,12 +43,14 @@ class PlayerColor(GetValueEnum):
 
 
 class Player:
+    game: 'ChessGame'
     user_id: str
     socket: WebSocketServerProtocol
     state: PlayerState
     color: PlayerColor
 
-    def __init__(self, user_id, color: PlayerColor, socket: WebSocketServerProtocol):
+    def __init__(self, game, user_id, color: PlayerColor, socket: WebSocketServerProtocol):
+        self.game = game
         self.user_id = user_id
         self.socket = socket
         self.color = color
@@ -73,7 +73,7 @@ class Player:
         return self.state.value == PlayerState.CONNECTED
 
     def send_state(self):
-        produced_message_queue.append(
+        self.game.message_queue.append(
             (
                 self.socket,
                 get_message(
@@ -169,6 +169,8 @@ class ChessGame:
     board: List[Piece]
     on_move: PlayerColor or None = None
 
+    message_queue: List
+
     def __init__(self):
         print('init new game')
         self.id = uuid4()
@@ -210,6 +212,7 @@ class ChessGame:
             Piece(self, PieceType.KNIGHT, PlayerColor.WHITE, x=7, y=1),
             Piece(self, PieceType.ROOK, PlayerColor.WHITE, x=8, y=1),
         ]
+        self.message_queue = []
 
     def identify(self, websocket: WebSocketServerProtocol, user_id: str):
         player = self.players.get(user_id)
@@ -220,20 +223,21 @@ class ChessGame:
             self.send_state()
 
     def connect(self, websocket: WebSocketServerProtocol, user_id: str):
-        if not self.connect_player_colors:
-            return
+        if self.connect_player_colors:
+            color = self.connect_player_colors.pop()
+            print('connect player', websocket, color)
+            player = Player(self, user_id, color, websocket)
+            self.players[user_id] = player
 
-        color = self.connect_player_colors.pop()
-        print('connect player', websocket, color)
-        player = Player(user_id, color, websocket)
-        self.players[user_id] = player
+            if self.can_start():
+                self.start_game()
+            else:
+                player.set_connected()
+        elif user_id in self.players:
+            player = self.players[user_id]
+            player.send_state()
 
-        if self.can_start():
-            self.start_game()
-        else:
-            player.set_connected()
-
-        self.send_state()
+        self.send_state(websocket)
 
     def can_start(self):
         return len(self.players.values()) == 2 and not any([player.can_start for player in self.players.values()])
@@ -274,10 +278,10 @@ class ChessGame:
     def switch_on_move(self):
         self.on_move = PlayerColor.WHITE if self.on_move == PlayerColor.BLACK else PlayerColor.BLACK
 
-    def send_state(self):
-        produced_message_queue.append(
+    def send_state(self, send_to: WebSocketServerProtocol = None):
+        self.message_queue.append(
             (
-                None,
+                send_to,
                 get_message(
                     ServerAction.GAME_STATE,
                     self.to_serializable_dict()
@@ -295,13 +299,16 @@ class ChessGame:
         }
 
 
-connected = set()
 paths = {}
 
 
 def get_game(path):
+    print('getting game for', path)
+
     if path not in paths:
         paths[path] = ChessGame()
+
+    print('game: ', paths[path])
 
     return paths[path]
 
@@ -310,7 +317,7 @@ async def consumer_handler(websocket, path):
     game = get_game(path)
 
     async for message in websocket:
-        print('...receive', websocket, path, message)
+        print('...receive', game, websocket, path, message)
 
         parsed_message = json.loads(message)
 
@@ -336,13 +343,12 @@ async def consumer_handler(websocket, path):
 
 
 async def producer_handler(websocket: WebSocketServerProtocol, path: str):
-    global produced_message_queue, connect_player_colors
     game = get_game(path)
 
     while True:
         await sleep(0.1)
 
-        for socket, message in produced_message_queue:
+        for socket, message in game.message_queue:
             print('...sending message', message)
 
             if not socket:
@@ -351,12 +357,11 @@ async def producer_handler(websocket: WebSocketServerProtocol, path: str):
             else:
                 await socket.send(message)
 
-        produced_message_queue = []
+        game.message_queue = []
 
 
 async def handler(websocket, path):
     print('...connected', websocket, path)
-    connected.add(websocket)
 
     consumer_task = asyncio.ensure_future(
         consumer_handler(websocket, path))

@@ -1,7 +1,7 @@
 import Konva from 'konva';
 import { computed, action, observable } from 'mobx';
 import { uuid } from 'uuidv4';
-import { toBoardCoord, findMove } from '../helpers';
+import { toBoardCoord, findMove, invertY } from '../helpers';
 
 class BasePiece implements IPiece {
   id: string;
@@ -22,7 +22,7 @@ class BasePiece implements IPiece {
   }
 
   @computed get renderPosition() {
-    return toBoardCoord(this.position);
+    return this.game.invertBoard ? invertY(toBoardCoord(this.position)) : toBoardCoord(this.position);
   }
 
   @action move: (coord: Coord, force?: boolean) => Move | null = (coord: Coord, force = false) => {

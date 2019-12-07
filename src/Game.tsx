@@ -49,7 +49,7 @@ const App = ({
               <p>{chessGame.onMove === chessGame.color ? "It's your turn!" : 'Waiting for opponent...'}</p>
               <div className="shadow">
                 <Stage width={size} height={size}>
-                  <Board />
+                  <Board invert={chessGame.invertBoard} />
                   <PossibleMoves game={chessGame} />
                   <Pieces game={chessGame} />
                 </Stage>

@@ -18,6 +18,8 @@ declare interface IChessGameStore {
   gameState: GameState;
   playerState: PlayerState;
 
+  invertBoard: boolean;
+
   startGame: () => void;
 
   selectPiece: (piece: Piece) => void;
