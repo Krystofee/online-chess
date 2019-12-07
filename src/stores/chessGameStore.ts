@@ -23,7 +23,7 @@ class ChessGameStore implements IChessGameStore {
 
   constructor() {
     this.pieces = [];
-    this.socket = new WebSocket('ws://localhost:8765');
+    this.socket = new WebSocket('ws://localhost:8765/a1ecb092-707e-4a29-8770-c97a3f4b36ab');
 
     this.deviceId = uuid();
     const storedUserId = window.localStorage.getItem('user');

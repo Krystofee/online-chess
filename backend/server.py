@@ -1,12 +1,12 @@
 import asyncio
 import enum
-import json
 import random
 from asyncio import sleep
-from typing import List, Dict
-from uuid import uuid4, UUID
 
+import json
 import websockets
+from typing import Dict, List
+from uuid import UUID, uuid4
 from websockets import WebSocketServerProtocol
 
 produced_message_queue = []
@@ -160,10 +160,6 @@ class GameState(GetValueEnum):
     PLAYING = 'PLAYING'
 
 
-connect_player_colors = [PlayerColor.WHITE, PlayerColor.BLACK]
-random.shuffle(connect_player_colors)
-
-
 class ChessGame:
     id: UUID
     state: GameState
@@ -174,9 +170,12 @@ class ChessGame:
     on_move: PlayerColor or None = None
 
     def __init__(self):
+        print('init new game')
         self.id = uuid4()
         self.state = GameState.WAITING
         self.players = {}
+        self.connect_player_colors = [PlayerColor.WHITE, PlayerColor.BLACK]
+        random.shuffle(self.connect_player_colors)
         self.board = [
             Piece(self, PieceType.ROOK, PlayerColor.BLACK, x=1, y=8),
             Piece(self, PieceType.KNIGHT, PlayerColor.BLACK, x=2, y=8),
@@ -218,13 +217,13 @@ class ChessGame:
         if player:
             player.socket = websocket
             player.send_state()
-            game.send_state()
+            self.send_state()
 
     def connect(self, websocket: WebSocketServerProtocol, user_id: str):
-        if not connect_player_colors:
+        if not self.connect_player_colors:
             return
 
-        color = connect_player_colors.pop()
+        color = self.connect_player_colors.pop()
         print('connect player', websocket, color)
         player = Player(user_id, color, websocket)
         self.players[user_id] = player
@@ -297,10 +296,19 @@ class ChessGame:
 
 
 connected = set()
-game = ChessGame()
+paths = {}
+
+
+def get_game(path):
+    if path not in paths:
+        paths[path] = ChessGame()
+
+    return paths[path]
 
 
 async def consumer_handler(websocket, path):
+    game = get_game(path)
+
     async for message in websocket:
         print('...receive', websocket, path, message)
 
@@ -327,10 +335,9 @@ async def consumer_handler(websocket, path):
             game.move(websocket, move)
 
 
-
-
 async def producer_handler(websocket: WebSocketServerProtocol, path: str):
     global produced_message_queue, connect_player_colors
+    game = get_game(path)
 
     while True:
         await sleep(0.1)
