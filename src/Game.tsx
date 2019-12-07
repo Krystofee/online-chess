@@ -46,7 +46,7 @@ const App = ({
         <div className="center" style={{ width: commonStore.size, height: commonStore.size }}>
           {chessGame.gameState === 'PLAYING' ? (
             <>
-              <p>{chessGame.onMove === 'W' ? 'White' : 'Black'} moves...</p>
+              <p>{chessGame.onMove === chessGame.color ? "It's your turn!" : 'Waiting for opponent...'}</p>
               <div className="shadow">
                 <Stage width={size} height={size}>
                   <Board />

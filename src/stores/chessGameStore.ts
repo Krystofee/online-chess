@@ -1,5 +1,6 @@
 import { observable, computed, action } from 'mobx';
 import { uuid } from 'uuidv4';
+
 import Rook from './pieces/Rook';
 import Queen from './pieces/Queen';
 import King from './pieces/King';
