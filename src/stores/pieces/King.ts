@@ -7,14 +7,14 @@ class King extends BasePiece implements IPiece {
   }
 
   generatePossibleMoves = () => {
-    const moves = generateDiagonalMoves(this, this.game.pieces, false).concat(
-      generateStraightMoves(this, this.game.pieces, false),
+    const moves = generateDiagonalMoves(this, this.game.board.pieces, false).concat(
+      generateStraightMoves(this, this.game.board.pieces, false),
     );
 
     // castling
     if (!this.hasMoved) {
       // king side
-      const HRook = this.game.pieces.find(
+      const HRook = this.game.board.pieces.find(
         (item) =>
           item.color === this.color &&
           item.type === 'R' &&
@@ -23,8 +23,12 @@ class King extends BasePiece implements IPiece {
           item.position.x === 8,
       );
       if (HRook) {
-        const FPiece = this.game.pieces.find((item) => item.position.y === this.position.y && item.position.x === 6);
-        const GPiece = this.game.pieces.find((item) => item.position.y === this.position.y && item.position.x === 7);
+        const FPiece = this.game.board.pieces.find(
+          (item) => item.position.y === this.position.y && item.position.x === 6,
+        );
+        const GPiece = this.game.board.pieces.find(
+          (item) => item.position.y === this.position.y && item.position.x === 7,
+        );
         if (!FPiece && !GPiece) {
           moves.push({
             piece: this,
@@ -41,7 +45,7 @@ class King extends BasePiece implements IPiece {
       }
 
       // queen side
-      const ARook = this.game.pieces.find(
+      const ARook = this.game.board.pieces.find(
         (item) =>
           item.color === this.color &&
           item.type === 'R' &&
@@ -50,9 +54,15 @@ class King extends BasePiece implements IPiece {
           item.position.x === 1,
       );
       if (ARook) {
-        const BPiece = this.game.pieces.find((item) => item.position.y === this.position.y && item.position.x === 2);
-        const CPiece = this.game.pieces.find((item) => item.position.y === this.position.y && item.position.x === 3);
-        const DPiece = this.game.pieces.find((item) => item.position.y === this.position.y && item.position.x === 4);
+        const BPiece = this.game.board.pieces.find(
+          (item) => item.position.y === this.position.y && item.position.x === 2,
+        );
+        const CPiece = this.game.board.pieces.find(
+          (item) => item.position.y === this.position.y && item.position.x === 3,
+        );
+        const DPiece = this.game.board.pieces.find(
+          (item) => item.position.y === this.position.y && item.position.x === 4,
+        );
         if (!BPiece && !CPiece && !DPiece) {
           moves.push({
             piece: this,

@@ -7,7 +7,7 @@ class Bishop extends BasePiece implements IPiece {
   }
 
   generatePossibleMoves = () => {
-    return generateDiagonalMoves(this, this.game.pieces);
+    return generateDiagonalMoves(this, this.game.board.pieces);
   };
 }
 

@@ -7,7 +7,9 @@ class Queen extends BasePiece implements IPiece {
   }
 
   generatePossibleMoves = () => {
-    return generateDiagonalMoves(this, this.game.pieces).concat(generateStraightMoves(this, this.game.pieces));
+    return generateDiagonalMoves(this, this.game.board.pieces).concat(
+      generateStraightMoves(this, this.game.board.pieces),
+    );
   };
 }
 

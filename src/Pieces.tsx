@@ -10,7 +10,7 @@ type Props = {
 const Pieces = ({ game }: Props) => {
   return (
     <Layer>
-      {game.pieces.map((piece) => (
+      {game.board.pieces.map((piece) => (
         <Piece key={piece.id} game={game} piece={piece} />
       ))}
     </Layer>

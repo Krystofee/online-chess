@@ -7,7 +7,7 @@ class Rook extends BasePiece implements IPiece {
   }
 
   generatePossibleMoves = () => {
-    return generateStraightMoves(this, this.game.pieces);
+    return generateStraightMoves(this, this.game.board.pieces);
   };
 }
 

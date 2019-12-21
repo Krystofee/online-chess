@@ -14,7 +14,7 @@ class Pawn extends BasePiece implements IPiece {
     const take_y = this.position.y + 1 * this.direction;
 
     if (
-      !this.game.pieces.find(
+      !this.game.board.pieces.find(
         (item) => item.color !== this.color && item.position.x === this.position.x && item.position.y === take_y,
       )
     ) {
@@ -23,7 +23,7 @@ class Pawn extends BasePiece implements IPiece {
 
     if (
       !this.hasMoved &&
-      !this.game.pieces.find(
+      !this.game.board.pieces.find(
         (item) =>
           item.color !== this.color &&
           item.position.x === this.position.x &&
@@ -34,7 +34,7 @@ class Pawn extends BasePiece implements IPiece {
     }
 
     // take
-    const leftPiece = this.game.pieces.find(
+    const leftPiece = this.game.board.pieces.find(
       (item) => item.color !== this.color && item.position.x === this.position.x + 1 && item.position.y === take_y,
     );
     if (leftPiece) {
@@ -42,7 +42,7 @@ class Pawn extends BasePiece implements IPiece {
     }
 
     // take
-    const rightPiece = this.game.pieces.find(
+    const rightPiece = this.game.board.pieces.find(
       (item) => item.color !== this.color && item.position.x === this.position.x - 1 && item.position.y === take_y,
     );
     if (rightPiece) {
@@ -52,7 +52,7 @@ class Pawn extends BasePiece implements IPiece {
     // en passant
     const enPassantY = this.color === 'W' ? 5 : 4;
     if (this.position.y === enPassantY) {
-      this.game.pieces
+      this.game.board.pieces
         .filter(
           (item) =>
             item.moveCount === 1 &&
@@ -69,8 +69,6 @@ class Pawn extends BasePiece implements IPiece {
           });
         });
     }
-
-    console.log(moves);
 
     return moves.map(({ position: { x, y }, takes, piece }) => ({
       piece,

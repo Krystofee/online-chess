@@ -9,7 +9,7 @@ class Knight extends BasePiece implements IPiece {
   generatePossibleMoves = () => {
     return generateOffsetMoves(
       this,
-      this.game.pieces,
+      this.game.board.pieces,
       [
         { x: 1, y: 2 },
         { x: -1, y: 2 },

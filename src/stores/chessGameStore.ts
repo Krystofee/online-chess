@@ -1,31 +1,24 @@
 import { observable, computed, action } from 'mobx';
 
-import Rook from './pieces/Rook';
-import Queen from './pieces/Queen';
-import King from './pieces/King';
-import Bishop from './pieces/Bishop';
-import Knight from './pieces/Knight';
-import Pawn from './pieces/Pawn';
 import { toBoardCoord, fromBoardCoord, getWebsocketMessage, invertY } from './helpers';
 import Player from './player';
+import ChessBoard from './chessBoard';
 
 class ChessGameStore implements IChessGameStore {
   @observable id: string;
   @observable state: GameState = 'WAITING';
   @observable onMove: PieceColor = 'W';
   @observable canMove: boolean = false;
-  @observable pieces: IPiece[];
   @observable selectedPiece: IPiece | null = null;
   @observable player: IPlayer;
+  @observable board: IChessBoard;
 
   @observable socket: WebSocket;
   @observable socketReady: boolean = false;
 
-  temporaryMove: Move | null = null;
-
   constructor(id: string) {
     this.id = id;
-    this.pieces = [];
+    this.board = new ChessBoard(this);
     // this.socket = new WebSocket(`ws://pichess-backend.herokuapp.com/0.0.0.0/${this.id}`);
     this.socket = new WebSocket(`ws://localhost:9000/${this.id}`);
 
@@ -51,45 +44,7 @@ class ChessGameStore implements IChessGameStore {
     this.state = state.state;
     this.onMove = state.on_move;
     this.canMove = true;
-    this.pieces = state.board.map((piece) =>
-      this.updatePiece(piece.id, piece.color, piece.type, piece.x, piece.y, piece.move_count),
-    );
-  };
-
-  @action updatePiece = (id: string, color: PieceColor, type: PieceType, x: number, y: number, moveCount: number) => {
-    let piece = this.pieces.find((item) => item.id === id);
-
-    const getPieceClass = (pieceType: PieceType) => {
-      switch (pieceType) {
-        case 'B':
-          return Bishop;
-        case 'N':
-          return Knight;
-        case 'R':
-          return Rook;
-        case 'Q':
-          return Queen;
-        case 'K':
-          return King;
-        default:
-          return Pawn;
-      }
-    };
-
-    if (!piece) {
-      const PieceClass = getPieceClass(type);
-      piece = new PieceClass(this, color, { x, y });
-    }
-
-    piece.id = id;
-    piece.position = { x, y };
-    piece.color = color;
-    piece.type = type;
-    piece.moveCount = moveCount;
-
-    piece.render();
-
-    return piece;
+    this.board.loadState(state.board);
   };
 
   @action startGame = () => {
@@ -137,7 +92,7 @@ class ChessGameStore implements IChessGameStore {
       const takes = move.takes;
       if (takes) {
         console.log('Takes!', piece, 'x', takes);
-        this.pieces = this.pieces.filter((item) => item.id !== takes.id);
+        this.board.pieces = this.board.pieces.filter((item) => item.id !== takes.id);
       }
 
       const nested = move.nested;
@@ -165,30 +120,6 @@ class ChessGameStore implements IChessGameStore {
       this.canMove = false;
       this.unselectPiece();
     }
-  };
-
-  isThreatened = ({ x, y }: Coord, byColor: PieceColor) => {
-    return this.pieces
-      .filter((item) => item.color === byColor)
-      .some((piece) => piece.possibleMoves.find((move) => move.position.x === x && move.position.y === y));
-  };
-
-  inCheck = (color: PieceColor) => {
-    const king = this.pieces.find((piece) => piece.type === 'K' && piece.color === color);
-    if (king) {
-      return this.isThreatened(king.position, this.getInverseColor(color));
-    }
-    return false;
-  };
-
-  getInverseColor = (color: PieceColor) => (color === 'W' ? 'B' : 'W');
-
-  applyTemporaryMove = (move: Move) => {
-    this.temporaryMove = move;
-  };
-
-  unapplyTemporaryMove = () => {
-    this.temporaryMove = null;
   };
 }
 

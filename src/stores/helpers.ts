@@ -85,3 +85,5 @@ export const generateStraightMoves = (piece: IPiece, allPieces: IPiece[], repeat
 export const getWebsocketMessage = (action: ClientAction, data: object) => {
   return JSON.stringify([action, data]);
 };
+
+export const getInverseColor = (color: PieceColor) => (color === 'W' ? 'B' : 'W');

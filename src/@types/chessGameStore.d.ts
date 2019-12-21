@@ -10,11 +10,11 @@ declare type BoardCoord = {
 
 declare interface IChessGameStore extends Broadcaster {
   id: string;
-  pieces: IPiece[];
   onMove: PieceColor;
   canMove: boolean;
   state: GameState;
   player: IPlayer;
+  board: IChessBoard;
 
   invertBoard: boolean;
 
@@ -26,10 +26,4 @@ declare interface IChessGameStore extends Broadcaster {
 
   movePiece(piece: IPiece, coord: BoardCoord): void;
   moveSelectedPiece(coord: BoardCoord): void;
-
-  isThreatened(coord: Coord, byColor: PieceColor): boolean;
-  inCheck(color: PieceColor): boolean;
-
-  applyTemporaryMove(move: Move);
-  unapplyTemporaryMove();
 }

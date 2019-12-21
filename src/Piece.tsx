@@ -14,7 +14,7 @@ const Piece = ({ game, piece }: Props) => (
     ref={(ref) => {
       piece.imageRef = ref;
     }}
-    fill={piece.type === 'K' && game.inCheck(piece.color) ? '#ff000040' : undefined}
+    fill={piece.type === 'K' && game.board.inCheck(piece.color) ? '#ff000040' : undefined}
     draggable={game.onMove === piece.color && game.player.color === piece.color}
     x={piece.renderPosition.x}
     y={piece.renderPosition.y}
