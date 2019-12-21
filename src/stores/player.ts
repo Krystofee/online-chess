@@ -19,7 +19,6 @@ class Player implements IPlayer {
 
   @action loadState = (state: ServerPlayerState) => {
     if (state.id === this.id) {
-      console.log('load player state', state);
       this.color = state.color;
       this.state = state.state;
     }

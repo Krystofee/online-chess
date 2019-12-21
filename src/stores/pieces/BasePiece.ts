@@ -28,8 +28,6 @@ class BasePiece implements IPiece {
     const possibleMoves = this.possibleMoves;
     const move: Move | undefined = force ? { piece: this, position: coord } : findMove(possibleMoves, coord);
 
-    console.log('moving', this, move);
-
     let result: null | Move = null;
     if (this.position !== coord && move) {
       this.position = coord;

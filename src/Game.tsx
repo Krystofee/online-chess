@@ -68,7 +68,7 @@ const App = ({
                     <PossibleMovesOverlay game={chessGame} />
                   </Stage>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                {/* <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div
                     style={{
                       padding: '1em',
@@ -85,7 +85,7 @@ const App = ({
                   >
                     08:51
                   </div>
-                </div>
+                </div> */}
               </div>
             </>
           ) : (

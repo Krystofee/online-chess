@@ -40,7 +40,6 @@ class ChessGameStore implements IChessGameStore {
   }
 
   @action loadState = (state: ServerGameState) => {
-    console.log('...game state', state);
     this.state = state.state;
     this.onMove = state.on_move;
     this.canMove = true;
@@ -85,19 +84,15 @@ class ChessGameStore implements IChessGameStore {
   @action movePiece = (piece: IPiece, boardCoord: BoardCoord) => {
     if (!this.canMove || this.onMove !== piece.color || this.player.color !== piece.color) return;
 
-    console.log('move', this.player.color, this.onMove);
-
     const move = piece.move(fromBoardCoord(this.board.invert ? invertY(boardCoord) : boardCoord));
     if (move) {
       const takes = move.takes;
       if (takes) {
-        console.log('Takes!', piece, 'x', takes);
         this.board.pieces = this.board.pieces.filter((item) => item.id !== takes.id);
       }
 
       const nested = move.nested;
       if (nested) {
-        console.log('...move nested', nested);
         nested.piece.move(nested.position, true);
       }
 
