@@ -7,7 +7,8 @@ import commonStore from './stores/commonStore';
 import ChessGameStore from './stores/chessGameStore';
 import Board from './Board';
 import Pieces from './Pieces';
-import PossibleMoves from './PossibleMoves';
+import PossibleMovesUnderlay from './PossibleMovesUnderlay';
+import PossibleMovesOverlay from './PossibleMovesOverlay';
 
 type RouteProps = RouteComponentProps<{
   gameId: string;
@@ -36,6 +37,9 @@ const App = ({
     <div className="center" style={{ width: size }}>
       <div className="center">
         <h1>Chess</h1>
+        <button onClick={() => window.location.replace('/')} type="button">
+          back
+        </button>
       </div>
 
       {!chessGame.socketReady ? (
@@ -44,22 +48,23 @@ const App = ({
         </div>
       ) : (
         <div className="center">
-          {chessGame.gameState === 'PLAYING' ? (
+          {chessGame.state === 'PLAYING' ? (
             <>
-              <p>{chessGame.onMove === chessGame.color ? "It's your turn!" : 'Waiting for opponent...'}</p>
+              <p>{chessGame.onMove === chessGame.player.color ? "It's your turn!" : 'Waiting for opponent...'}</p>
               <div style={{ position: 'relative', display: 'flex', flexDirection: 'row' }}>
                 <div className="shadow" style={{ width: size, height: size }}>
                   <Stage width={size} height={size}>
                     <Board invert={chessGame.invertBoard} />
-                    <PossibleMoves game={chessGame} />
+                    <PossibleMovesUnderlay game={chessGame} />
                     <Pieces game={chessGame} />
+                    <PossibleMovesOverlay game={chessGame} />
                   </Stage>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div
                     style={{
                       padding: '1em',
-                      backgroundColor: chessGame.onMove === chessGame.color ? undefined : '#ff003b24',
+                      backgroundColor: chessGame.onMove === chessGame.player.color ? undefined : '#ff003b24',
                     }}
                   >
                     08:51
@@ -67,7 +72,7 @@ const App = ({
                   <div
                     style={{
                       padding: '1em',
-                      backgroundColor: chessGame.onMove === chessGame.color ? '#ff003b24' : undefined,
+                      backgroundColor: chessGame.onMove === chessGame.player.color ? '#ff003b24' : undefined,
                     }}
                   >
                     08:51
@@ -78,7 +83,7 @@ const App = ({
           ) : (
             <div className="text-center">
               <div style={{ paddingTop: 100 }}>
-                {chessGame.playerState === 'CONNECTED' ? (
+                {chessGame.player.state === 'CONNECTED' ? (
                   <div style={{ padding: '2em', backgroundColor: '#00000010' }}>
                     <h3>Invite your friend using this link</h3>
                     <pre>{`localhost:3000/${gameId}/`}</pre>

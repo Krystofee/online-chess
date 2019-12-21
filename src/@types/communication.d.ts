@@ -14,6 +14,7 @@ declare type SerializedPiece = {
   id: string;
   type: PieceType;
   color: PieceColor;
+  move_count: number;
   x: number;
   y: number;
 };
@@ -36,3 +37,9 @@ declare type ServerData = ServerPlayerState | ServerGameState | ServerPreGame;
 declare type ServerMessage = [ServerAction, ServerData];
 
 declare type ClientAction = 'CONNECT' | 'MOVE' | 'IDENTIFY';
+
+declare type ClientSendData = object;
+
+declare interface Broadcaster {
+  loadState(data: any): void;
+}

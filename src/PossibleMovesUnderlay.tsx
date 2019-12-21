@@ -7,7 +7,7 @@ type Props = {
   game: IChessGameStore;
 };
 
-const Pieces = ({ game }: Props) => {
+const PossibleMovesUnderlay = ({ game }: Props) => {
   return (
     <Layer>
       {game.possibleMoves.map(({ position: { x, y } }) => (
@@ -23,4 +23,4 @@ const Pieces = ({ game }: Props) => {
   );
 };
 
-export default observer(Pieces);
+export default observer(PossibleMovesUnderlay);

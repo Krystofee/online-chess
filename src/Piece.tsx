@@ -14,20 +14,18 @@ const Piece = ({ game, piece }: Props) => (
     ref={(ref) => {
       piece.imageRef = ref;
     }}
-    draggable={game.onMove === piece.color && game.color === piece.color}
+    draggable={game.onMove === piece.color && game.player.color === piece.color}
     x={piece.renderPosition.x}
     y={piece.renderPosition.y}
     width={commonStore.pieceSize}
     height={commonStore.pieceSize}
     image={piece.color === 'B' ? blackPieces[piece.type] : whitePieces[piece.type]}
     onClick={() => {
-      game.unselectPiece();
       game.selectPiece(piece);
     }}
     onDragStart={() => game.selectPiece(piece)}
     onDragEnd={(evt) => {
       game.movePiece(piece, { x: evt.target.x(), y: evt.target.y() });
-      game.unselectPiece();
     }}
   />
 );
