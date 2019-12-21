@@ -2,12 +2,12 @@ import BasePiece from './BasePiece';
 import { generateDiagonalMoves } from '../helpers';
 
 class Bishop extends BasePiece implements IPiece {
-  constructor(gameStore: IChessGameStore, color: PieceColor, position: Coord) {
-    super(gameStore, 'B', color, position);
+  constructor(board: IChessBoard, color: PieceColor, position: Coord) {
+    super(board, 'B', color, position);
   }
 
   generatePossibleMoves = () => {
-    return generateDiagonalMoves(this, this.game.board.pieces);
+    return generateDiagonalMoves(this, this.board.pieces);
   };
 }
 

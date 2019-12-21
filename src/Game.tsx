@@ -40,6 +40,14 @@ const App = ({
         <button onClick={() => window.location.replace('/')} type="button">
           back
         </button>
+        <button
+          onClick={() => {
+            chessGame.board.invert = !chessGame.board.invert;
+          }}
+          type="button"
+        >
+          rotate
+        </button>
       </div>
 
       {!chessGame.socketReady ? (
@@ -54,7 +62,7 @@ const App = ({
               <div style={{ position: 'relative', display: 'flex', flexDirection: 'row' }}>
                 <div className="shadow" style={{ width: size, height: size }}>
                   <Stage width={size} height={size}>
-                    <Board invert={chessGame.invertBoard} />
+                    <Board invert={chessGame.board.invert} />
                     <PossibleMovesUnderlay game={chessGame} />
                     <Pieces game={chessGame} />
                     <PossibleMovesOverlay game={chessGame} />

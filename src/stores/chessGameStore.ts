@@ -18,11 +18,11 @@ class ChessGameStore implements IChessGameStore {
 
   constructor(id: string) {
     this.id = id;
-    this.board = new ChessBoard(this);
     // this.socket = new WebSocket(`ws://pichess-backend.herokuapp.com/0.0.0.0/${this.id}`);
     this.socket = new WebSocket(`ws://localhost:9000/${this.id}`);
 
     this.player = new Player(this.id);
+    this.board = new ChessBoard(this, [], this.shouldInvertBoard);
     this.socket.onopen = () => {
       this.socketReady = true;
       this.socket.send(getWebsocketMessage('IDENTIFY', { id: this.player.id }));
@@ -66,7 +66,7 @@ class ChessGameStore implements IChessGameStore {
     this.selectedPiece = null;
   };
 
-  @computed get invertBoard() {
+  @computed get shouldInvertBoard() {
     return this.player.color === 'W';
   }
 
@@ -74,7 +74,7 @@ class ChessGameStore implements IChessGameStore {
     if (!this.selectedPiece) return [];
     return this.selectedPiece.possibleMoves.map((item) => ({
       ...item,
-      position: this.invertBoard ? invertY(toBoardCoord(item.position)) : toBoardCoord(item.position),
+      position: this.board.invert ? invertY(toBoardCoord(item.position)) : toBoardCoord(item.position),
     }));
   }
 
@@ -87,7 +87,7 @@ class ChessGameStore implements IChessGameStore {
 
     console.log('move', this.player.color, this.onMove);
 
-    const move = piece.move(fromBoardCoord(this.invertBoard ? invertY(boardCoord) : boardCoord));
+    const move = piece.move(fromBoardCoord(this.board.invert ? invertY(boardCoord) : boardCoord));
     if (move) {
       const takes = move.takes;
       if (takes) {

@@ -4,8 +4,8 @@ import BasePiece from './BasePiece';
 class Pawn extends BasePiece implements IPiece {
   @observable direction: number;
 
-  constructor(gameStore: IChessGameStore, color: PieceColor, position: Coord) {
-    super(gameStore, 'P', color, position);
+  constructor(board: IChessBoard, color: PieceColor, position: Coord) {
+    super(board, 'P', color, position);
     this.direction = color === 'B' ? -1 : 1;
   }
 
@@ -14,7 +14,7 @@ class Pawn extends BasePiece implements IPiece {
     const take_y = this.position.y + 1 * this.direction;
 
     if (
-      !this.game.board.pieces.find(
+      !this.board.pieces.find(
         (item) => item.color !== this.color && item.position.x === this.position.x && item.position.y === take_y,
       )
     ) {
@@ -23,7 +23,7 @@ class Pawn extends BasePiece implements IPiece {
 
     if (
       !this.hasMoved &&
-      !this.game.board.pieces.find(
+      !this.board.pieces.find(
         (item) =>
           item.color !== this.color &&
           item.position.x === this.position.x &&
@@ -34,7 +34,7 @@ class Pawn extends BasePiece implements IPiece {
     }
 
     // take
-    const leftPiece = this.game.board.pieces.find(
+    const leftPiece = this.board.pieces.find(
       (item) => item.color !== this.color && item.position.x === this.position.x + 1 && item.position.y === take_y,
     );
     if (leftPiece) {
@@ -42,7 +42,7 @@ class Pawn extends BasePiece implements IPiece {
     }
 
     // take
-    const rightPiece = this.game.board.pieces.find(
+    const rightPiece = this.board.pieces.find(
       (item) => item.color !== this.color && item.position.x === this.position.x - 1 && item.position.y === take_y,
     );
     if (rightPiece) {
@@ -52,7 +52,7 @@ class Pawn extends BasePiece implements IPiece {
     // en passant
     const enPassantY = this.color === 'W' ? 5 : 4;
     if (this.position.y === enPassantY) {
-      this.game.board.pieces
+      this.board.pieces
         .filter(
           (item) =>
             item.moveCount === 1 &&

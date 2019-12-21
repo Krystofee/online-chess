@@ -6,23 +6,23 @@ import { toBoardCoord, findMove, invertY } from '../helpers';
 class BasePiece implements IPiece {
   id: string;
   imageRef: Konva.Image | null = null;
-  game: IChessGameStore;
+  board: IChessBoard;
 
   @observable position: Coord;
   @observable type: PieceType;
   @observable color: PieceColor;
   @observable moveCount = 0;
 
-  constructor(gameStore: IChessGameStore, type: PieceType, color: PieceColor, position: Coord) {
+  constructor(board: IChessBoard, type: PieceType, color: PieceColor, position: Coord) {
     this.id = uuid();
-    this.game = gameStore;
+    this.board = board;
     this.type = type;
     this.color = color;
     this.position = position;
   }
 
   @computed get renderPosition() {
-    return this.game.invertBoard ? invertY(toBoardCoord(this.position)) : toBoardCoord(this.position);
+    return this.board.invert ? invertY(toBoardCoord(this.position)) : toBoardCoord(this.position);
   }
 
   @action move: (coord: Coord, force?: boolean) => Move | null = (coord: Coord, force = false) => {

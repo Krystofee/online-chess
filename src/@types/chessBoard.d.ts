@@ -1,5 +1,6 @@
 declare interface IChessBoard {
   pieces: IPiece[];
+  invert: boolean;
 
   loadState(state: ServerGameState['board']): void;
 
@@ -8,4 +9,6 @@ declare interface IChessBoard {
 
   applyTemporaryMove(move: Move);
   unapplyTemporaryMove();
+
+  fastCopy(): IChessBoard;
 }
