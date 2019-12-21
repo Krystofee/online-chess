@@ -17,7 +17,7 @@ const PossibleMovesOverlay = ({ game }: Props) => {
           y={y}
           width={commonStore.pieceSize}
           height={commonStore.pieceSize}
-          fill="#00000020"
+          fill="#00000010"
           onClick={() => {
             game.moveSelectedPiece({ x, y });
           }}

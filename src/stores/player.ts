@@ -6,14 +6,14 @@ class Player implements IPlayer {
   @observable color: PieceColor | null = null;
   @observable state: PlayerState = 'INIT';
 
-  constructor() {
+  constructor(gameId: string) {
     // detect or generate player id
     this.id = uuid();
-    const storedUserId = window.localStorage.getItem(this.id);
+    const storedUserId = window.localStorage.getItem(gameId);
     if (storedUserId) {
       this.id = storedUserId;
     } else {
-      window.localStorage.setItem(this.id, this.id);
+      window.localStorage.setItem(gameId, this.id);
     }
   }
 
