@@ -9,14 +9,12 @@ import Pawn from './pieces/Pawn';
 import { getInverseColor } from './helpers';
 
 class ChessBoard implements IChessBoard {
-  game: IChessGameStore;
   @observable pieces: IPiece[];
   @observable invert: boolean;
 
   temporaryMove: Move | null = null;
 
-  constructor(game: IChessGameStore, pieces: IPiece[] = [], invert = false) {
-    this.game = game;
+  constructor(pieces: IPiece[] = [], invert = false) {
     this.pieces = pieces;
     this.invert = invert;
   }
@@ -86,7 +84,7 @@ class ChessBoard implements IChessBoard {
   };
 
   fastCopy = () => {
-    const board = new ChessBoard(this.game);
+    const board = new ChessBoard();
     // TODO
     return board;
   };

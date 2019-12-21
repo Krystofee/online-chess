@@ -22,7 +22,7 @@ class ChessGameStore implements IChessGameStore {
     this.socket = new WebSocket(`ws://localhost:9000/${this.id}`);
 
     this.player = new Player(this.id);
-    this.board = new ChessBoard(this, [], this.shouldInvertBoard);
+    this.board = new ChessBoard([], this.shouldInvertBoard);
     this.socket.onopen = () => {
       this.socketReady = true;
       this.socket.send(getWebsocketMessage('IDENTIFY', { id: this.player.id }));
