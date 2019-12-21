@@ -21,6 +21,8 @@ class ChessGameStore implements IChessGameStore {
   @observable socket: WebSocket;
   @observable socketReady: boolean = false;
 
+  temporaryMove: Move | null = null;
+
   constructor(id: string) {
     this.id = id;
     this.pieces = [];
@@ -115,14 +117,10 @@ class ChessGameStore implements IChessGameStore {
 
   @computed get possibleMoves() {
     if (!this.selectedPiece) return [];
-    return this.selectedPiece.possibleMoves
-      .filter(
-        (coord) => coord.position.x >= 1 && coord.position.x <= 8 && coord.position.y >= 1 && coord.position.y <= 8,
-      ) // filter only valid moves
-      .map((item) => ({
-        ...item,
-        position: this.invertBoard ? invertY(toBoardCoord(item.position)) : toBoardCoord(item.position),
-      }));
+    return this.selectedPiece.possibleMoves.map((item) => ({
+      ...item,
+      position: this.invertBoard ? invertY(toBoardCoord(item.position)) : toBoardCoord(item.position),
+    }));
   }
 
   @action moveSelectedPiece = (boardCoord: BoardCoord) => {
@@ -167,6 +165,30 @@ class ChessGameStore implements IChessGameStore {
       this.canMove = false;
       this.unselectPiece();
     }
+  };
+
+  isThreatened = ({ x, y }: Coord, byColor: PieceColor) => {
+    return this.pieces
+      .filter((item) => item.color === byColor)
+      .some((piece) => piece.possibleMoves.find((move) => move.position.x === x && move.position.y === y));
+  };
+
+  inCheck = (color: PieceColor) => {
+    const king = this.pieces.find((piece) => piece.type === 'K' && piece.color === color);
+    if (king) {
+      return this.isThreatened(king.position, this.getInverseColor(color));
+    }
+    return false;
+  };
+
+  getInverseColor = (color: PieceColor) => (color === 'W' ? 'B' : 'W');
+
+  applyTemporaryMove = (move: Move) => {
+    this.temporaryMove = move;
+  };
+
+  unapplyTemporaryMove = () => {
+    this.temporaryMove = null;
   };
 }
 

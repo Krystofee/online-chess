@@ -1,4 +1,3 @@
-import { computed } from 'mobx';
 import BasePiece from './BasePiece';
 import { generateOffsetMoves } from '../helpers';
 
@@ -7,7 +6,7 @@ class Knight extends BasePiece implements IPiece {
     super(gameStore, 'N', color, position);
   }
 
-  @computed get possibleMoves(): Move[] {
+  generatePossibleMoves = () => {
     return generateOffsetMoves(
       this,
       this.game.pieces,
@@ -23,7 +22,7 @@ class Knight extends BasePiece implements IPiece {
       ],
       false,
     );
-  }
+  };
 }
 
 export default Knight;

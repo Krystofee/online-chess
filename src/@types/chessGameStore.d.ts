@@ -26,4 +26,10 @@ declare interface IChessGameStore extends Broadcaster {
 
   movePiece(piece: IPiece, coord: BoardCoord): void;
   moveSelectedPiece(coord: BoardCoord): void;
+
+  isThreatened(coord: Coord, byColor: PieceColor): boolean;
+  inCheck(color: PieceColor): boolean;
+
+  applyTemporaryMove(move: Move);
+  unapplyTemporaryMove();
 }

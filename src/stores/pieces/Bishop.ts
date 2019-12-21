@@ -1,4 +1,3 @@
-import { computed } from 'mobx';
 import BasePiece from './BasePiece';
 import { generateDiagonalMoves } from '../helpers';
 
@@ -7,9 +6,9 @@ class Bishop extends BasePiece implements IPiece {
     super(gameStore, 'B', color, position);
   }
 
-  @computed get possibleMoves(): Move[] {
+  generatePossibleMoves = () => {
     return generateDiagonalMoves(this, this.game.pieces);
-  }
+  };
 }
 
 export default Bishop;

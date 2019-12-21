@@ -52,10 +52,17 @@ class BasePiece implements IPiece {
     }
   };
 
-  // eslint-disable-next-line class-methods-use-this
   @computed get possibleMoves() {
-    return [] as Move[];
+    // const moves = [];
+    const generatedMoves = this.generatePossibleMoves().filter(
+      (move) => move.position.x >= 1 && move.position.x <= 8 && move.position.y >= 1 && move.position.y <= 8,
+    );
+    return generatedMoves;
   }
+
+  generatePossibleMoves = () => {
+    return [] as Move[];
+  };
 
   @computed get hasMoved() {
     return this.moveCount > 0;

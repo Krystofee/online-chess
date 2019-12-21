@@ -1,4 +1,4 @@
-import { computed, observable } from 'mobx';
+import { observable } from 'mobx';
 import BasePiece from './BasePiece';
 
 class Pawn extends BasePiece implements IPiece {
@@ -9,7 +9,7 @@ class Pawn extends BasePiece implements IPiece {
     this.direction = color === 'B' ? -1 : 1;
   }
 
-  @computed get possibleMoves(): Move[] {
+  generatePossibleMoves = () => {
     const moves: Move[] = [];
     const take_y = this.position.y + 1 * this.direction;
 
@@ -77,7 +77,7 @@ class Pawn extends BasePiece implements IPiece {
       takes,
       position: { x: this.position.x + x, y: this.position.y + y * this.direction },
     }));
-  }
+  };
 }
 
 export default Pawn;

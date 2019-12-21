@@ -1,4 +1,3 @@
-import { computed } from 'mobx';
 import BasePiece from './BasePiece';
 import { generateStraightMoves } from '../helpers';
 
@@ -7,9 +6,9 @@ class Rook extends BasePiece implements IPiece {
     super(gameStore, 'R', color, position);
   }
 
-  @computed get possibleMoves(): Move[] {
+  generatePossibleMoves = () => {
     return generateStraightMoves(this, this.game.pieces);
-  }
+  };
 }
 
 export default Rook;

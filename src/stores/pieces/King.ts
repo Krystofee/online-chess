@@ -1,4 +1,3 @@
-import { computed } from 'mobx';
 import BasePiece from './BasePiece';
 import { generateDiagonalMoves, generateStraightMoves } from '../helpers';
 
@@ -7,7 +6,7 @@ class King extends BasePiece implements IPiece {
     super(gameStore, 'K', color, position);
   }
 
-  @computed get possibleMoves(): Move[] {
+  generatePossibleMoves = () => {
     const moves = generateDiagonalMoves(this, this.game.pieces, false).concat(
       generateStraightMoves(this, this.game.pieces, false),
     );
@@ -71,7 +70,7 @@ class King extends BasePiece implements IPiece {
     }
 
     return moves;
-  }
+  };
 }
 
 export default King;
