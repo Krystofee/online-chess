@@ -1,5 +1,4 @@
 import Konva from 'konva';
-import { computed, action, observable } from 'mobx';
 import { uuid } from 'uuidv4';
 import { toBoardCoord, findMove, invertY } from '../helpers';
 
@@ -8,10 +7,10 @@ class BasePiece implements IPiece {
   imageRef: Konva.Image | null = null;
   board: IChessBoard;
 
-  @observable position: Coord;
-  @observable type: PieceType;
-  @observable color: PieceColor;
-  @observable moveCount = 0;
+  position: Coord;
+  type: PieceType;
+  color: PieceColor;
+  moveCount = 0;
 
   constructor(board: IChessBoard, type: PieceType, color: PieceColor, position: Coord) {
     this.id = uuid();
@@ -21,11 +20,11 @@ class BasePiece implements IPiece {
     this.position = position;
   }
 
-  @computed get renderPosition() {
+  get renderPosition() {
     return this.board.invert ? invertY(toBoardCoord(this.position)) : toBoardCoord(this.position);
   }
 
-  @action move: (coord: Coord, force?: boolean) => Move | null = (coord: Coord, force = false) => {
+  move: (coord: Coord, force?: boolean) => Move | null = (coord: Coord, force = false) => {
     const possibleMoves = this.possibleMoves;
     const move: Move | undefined = force ? { piece: this, position: coord } : findMove(possibleMoves, coord);
 
@@ -43,7 +42,7 @@ class BasePiece implements IPiece {
     return result;
   };
 
-  @action render = () => {
+  render = () => {
     if (this.imageRef) {
       this.imageRef.to({
         ...this.renderPosition,
@@ -52,21 +51,41 @@ class BasePiece implements IPiece {
     }
   };
 
-  @computed get possibleMoves() {
-    // const moves = [];
+  get possibleMoves() {
+    const moves: Move[] = [];
     const generatedMoves = this.generatePossibleMoves().filter(
       (move) => move.position.x >= 1 && move.position.x <= 8 && move.position.y >= 1 && move.position.y <= 8,
     );
-    return generatedMoves;
+
+    const board = this.board.copy();
+
+    generatedMoves.forEach((move) => {
+      board.applyTemporaryMove(move);
+
+      if (!board.inCheck(this.color)) {
+        moves.push(move);
+      }
+
+      board.unapplyTemporaryMove();
+    });
+
+    return moves;
   }
 
   generatePossibleMoves = () => {
     return [] as Move[];
   };
 
-  @computed get hasMoved() {
+  get hasMoved() {
     return this.moveCount > 0;
   }
+
+  copy = (board: IChessBoard) => {
+    const piece = new (this.constructor as any)(board, this.color, this.position) as IPiece;
+    piece.id = this.id;
+    piece.imageRef = null;
+    return piece;
+  };
 }
 
 export default BasePiece;

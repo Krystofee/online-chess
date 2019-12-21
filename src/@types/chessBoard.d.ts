@@ -10,5 +10,5 @@ declare interface IChessBoard {
   applyTemporaryMove(move: Move);
   unapplyTemporaryMove();
 
-  fastCopy(): IChessBoard;
+  copy(): IChessBoard;
 }

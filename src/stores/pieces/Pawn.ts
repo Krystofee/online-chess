@@ -9,7 +9,7 @@ class Pawn extends BasePiece implements IPiece {
     this.direction = color === 'B' ? -1 : 1;
   }
 
-  generatePossibleMoves = () => {
+  generatePossibleMoves: () => Move[] = () => {
     const moves: Move[] = [];
     const take_y = this.position.y + 1 * this.direction;
 

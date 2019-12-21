@@ -6,7 +6,7 @@ class King extends BasePiece implements IPiece {
     super(board, 'K', color, position);
   }
 
-  generatePossibleMoves = () => {
+  generatePossibleMoves: () => Move[] = () => {
     const moves = generateDiagonalMoves(this, this.board.pieces, false).concat(
       generateStraightMoves(this, this.board.pieces, false),
     );

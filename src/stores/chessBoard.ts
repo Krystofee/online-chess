@@ -12,7 +12,7 @@ class ChessBoard implements IChessBoard {
   @observable pieces: IPiece[];
   @observable invert: boolean;
 
-  temporaryMove: Move | null = null;
+  reverseMove: Move | null = null;
 
   constructor(pieces: IPiece[] = [], invert = false) {
     this.pieces = pieces;
@@ -64,7 +64,7 @@ class ChessBoard implements IChessBoard {
   isThreatened = ({ x, y }: Coord, byColor: PieceColor) => {
     return this.pieces
       .filter((item) => item.color === byColor)
-      .some((piece) => piece.possibleMoves.find((move) => move.position.x === x && move.position.y === y));
+      .some((piece) => piece.generatePossibleMoves().find((move) => move.position.x === x && move.position.y === y));
   };
 
   inCheck = (color: PieceColor) => {
@@ -76,16 +76,45 @@ class ChessBoard implements IChessBoard {
   };
 
   applyTemporaryMove = (move: Move) => {
-    this.temporaryMove = move;
+    const piece = this.pieces.find((item) => item.id === move.piece.id);
+    const takes = move.takes;
+
+    if (!piece) {
+      throw Error('Piece not found!');
+    }
+
+    this.reverseMove = {
+      position: piece.position,
+      piece,
+      takes: move.takes,
+    };
+
+    piece.position = move.position;
+    if (takes) this.pieces = this.pieces.filter((item) => item.id !== takes.id);
   };
 
   unapplyTemporaryMove = () => {
-    this.temporaryMove = null;
+    if (!this.reverseMove) return;
+
+    const { position, piece, takes } = this.reverseMove;
+    const movedPiece = this.pieces.find((item) => item.id === piece.id);
+
+    if (!movedPiece) {
+      throw Error('Piece not found!');
+    }
+
+    movedPiece.position = position;
+
+    if (takes) {
+      this.pieces.push(takes.copy(this));
+    }
+
+    this.reverseMove = null;
   };
 
-  fastCopy = () => {
+  copy = () => {
     const board = new ChessBoard();
-    // TODO
+    board.pieces = this.pieces.map((piece) => piece.copy(board));
     return board;
   };
 }

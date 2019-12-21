@@ -6,7 +6,7 @@ class Knight extends BasePiece implements IPiece {
     super(board, 'N', color, position);
   }
 
-  generatePossibleMoves = () => {
+  generatePossibleMoves: () => Move[] = () => {
     return generateOffsetMoves(
       this,
       this.board.pieces,

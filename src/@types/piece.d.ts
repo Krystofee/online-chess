@@ -22,4 +22,6 @@ declare interface IPiece {
   render: () => void;
 
   possibleMoves: Move[];
+  generatePossibleMoves: () => Move[];
+  copy: (board: IChessBoard) => IPiece;
 }

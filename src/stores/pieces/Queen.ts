@@ -6,7 +6,7 @@ class Queen extends BasePiece implements IPiece {
     super(board, 'Q', color, position);
   }
 
-  generatePossibleMoves = () => {
+  generatePossibleMoves: () => Move[] = () => {
     return generateDiagonalMoves(this, this.board.pieces).concat(generateStraightMoves(this, this.board.pieces));
   };
 }

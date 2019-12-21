@@ -6,7 +6,7 @@ class Bishop extends BasePiece implements IPiece {
     super(board, 'B', color, position);
   }
 
-  generatePossibleMoves = () => {
+  generatePossibleMoves: () => Move[] = () => {
     return generateDiagonalMoves(this, this.board.pieces);
   };
 }
