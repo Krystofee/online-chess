@@ -19,12 +19,6 @@ const Board = ({ invert }: Props) => {
         [...Array(8).keys()].map((y) => (
           <Rect
             key={`${x}${y}`}
-            shadowEnabled
-            shadowColor="#000000"
-            shadowBlur={5}
-            shadowOffsetX={3}
-            shadowOffsetY={5}
-            shadowOpacity={100}
             x={x * configStore.pieceSize}
             y={y * configStore.pieceSize}
             width={configStore.pieceSize}
