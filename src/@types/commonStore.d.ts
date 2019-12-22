@@ -1,5 +1,5 @@
 declare interface IConfigStore {
-  size: number;
+  gameSize: number;
   websocketUrl: string;
   pieceSize: number;
 }

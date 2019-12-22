@@ -14,7 +14,7 @@ export const fromBoardCoord = (coord: BoardCoord) =>
 
 export const invertY = (coord: BoardCoord) => ({
   ...coord,
-  y: configStore.size - coord.y - configStore.pieceSize,
+  y: configStore.gameSize - coord.y - configStore.pieceSize,
 });
 
 export const findMove = (moves: Move[], coord: Coord) =>

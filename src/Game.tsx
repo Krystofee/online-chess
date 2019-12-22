@@ -9,6 +9,10 @@ import Board from './Board';
 import Pieces from './Pieces';
 import PossibleMovesUnderlay from './PossibleMovesUnderlay';
 import PossibleMovesOverlay from './PossibleMovesOverlay';
+import { useWindowSize } from './stores/hooks';
+import Flexbox from './Flexbox';
+import PlayerStats from './PlayerStats';
+import ActionBar from './ActionBar';
 
 type RouteProps = RouteComponentProps<{
   gameId: string;
@@ -20,10 +24,21 @@ const App = ({
   },
 }: RouteProps) => {
   const [chessGame, setChessGame] = useState<ChessGameStore | null>(null);
+  const windowSize = useWindowSize();
 
   const startGame = () => {
     if (chessGame) chessGame.startGame();
   };
+
+  useEffect(() => {
+    const size = Math.min(windowSize.x, windowSize.y);
+    if (size <= configStore.DEFAULT_SIZE) {
+      configStore.gameSize = size;
+    } else {
+      configStore.gameSize = configStore.DEFAULT_SIZE;
+    }
+    configStore.isLandscape = windowSize.y > windowSize.x;
+  }, [windowSize]);
 
   useEffect(() => {
     setChessGame(new ChessGameStore(gameId));
@@ -31,81 +46,46 @@ const App = ({
 
   if (!chessGame) return null;
 
-  const size = configStore.size;
-
   return (
-    <div className="center" style={{ width: size }}>
+    <>
       {!chessGame.socketReady ? (
         <div className="center">
           <p>... connecting</p>
         </div>
       ) : (
-        <div className="center">
+        <div className="center" style={{ width: configStore.gameSize }}>
           {chessGame.state === 'PLAYING' ? (
             <>
-              <p>{chessGame.onMove === chessGame.player.color ? "It's your turn!" : 'Waiting for opponent...'}</p>
-              <div style={{ position: 'relative', display: 'flex', flexDirection: 'row' }}>
-                <div className="shadow" style={{ width: size, height: size }}>
-                  <Stage width={size} height={size}>
+              <PlayerStats game={chessGame} />
+              <Flexbox direction="row" justifyContent="center">
+                <div className="shadow">
+                  <Stage width={configStore.gameSize} height={configStore.gameSize}>
                     <Board invert={chessGame.board.invert} />
                     <PossibleMovesUnderlay game={chessGame} />
                     <Pieces game={chessGame} />
                     <PossibleMovesOverlay game={chessGame} />
                   </Stage>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                  <div
-                    style={{
-                      padding: '1em',
-                      backgroundColor: chessGame.onMove === chessGame.player.color ? undefined : '#ff003b24',
-                    }}
-                  >
-                    08:51
-                  </div>
-                  <div
-                    style={{
-                      padding: '1em',
-                      backgroundColor: chessGame.onMove === chessGame.player.color ? '#ff003b24' : undefined,
-                    }}
-                  >
-                    08:51
-                  </div>
-                </div>
-              </div>
+              </Flexbox>
+              <PlayerStats game={chessGame} />
+              <ActionBar game={chessGame} />
             </>
           ) : (
             <div className="text-center">
               <div style={{ paddingTop: 100 }}>
-                {chessGame.player.state === 'CONNECTED' ? (
+                {chessGame.player.state === 'CONNECTED' && (
                   <div style={{ padding: '2em', backgroundColor: '#00000010' }}>
                     <h3>Invite your friend using this link</h3>
                     <pre>{`localhost:3000/${gameId}/`}</pre>
                     <p>... waiting for all players to join</p>
                   </div>
-                ) : (
-                  <button className="pure-button pure-button-primary button-xlarge" type="button" onClick={startGame}>
-                    Join
-                  </button>
                 )}
               </div>
             </div>
           )}
         </div>
       )}
-      <div className="center">
-        <button onClick={() => window.location.replace('/')} type="button">
-          back
-        </button>
-        <button
-          onClick={() => {
-            chessGame.board.invert = !chessGame.board.invert;
-          }}
-          type="button"
-        >
-          rotate
-        </button>
-      </div>
-    </div>
+    </>
   );
 };
 

@@ -8,14 +8,40 @@ const App = () => {
     window.location.assign(`/${gameId}/`);
   };
 
+  const gameModes = [
+    [
+      [1, 0],
+      [2, 1],
+      [3, 0],
+    ],
+    [
+      [3, 2],
+      [5, 0],
+      [5, 3],
+    ],
+    [
+      [10, 0],
+      [10, 5],
+      [15, 10],
+    ],
+  ];
+
   return (
-    <div className="center" style={{ width: 800 }}>
-      <div className="text-center">
-        <div style={{ paddingTop: 100 }}>
-          <button className="pure-button pure-button-primary button-xlarge" type="button" onClick={createGame}>
-            Create new game
-          </button>
-        </div>
+    <div style={{ padding: '1rem' }}>
+      <div className="tiles">
+        {gameModes.map((row) => (
+          <div className="tiles-row">
+            {row.map((mode) => (
+              <div className="tiles-tile" onClick={createGame} role="presentation">
+                <div>
+                  <div className="tiles-tile-content text-center">
+                    {mode[0]}|{mode[1]}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
     </div>
   );
