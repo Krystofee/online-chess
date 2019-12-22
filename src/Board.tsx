@@ -1,7 +1,7 @@
 import React from 'react';
 import { Layer, Rect } from 'react-konva';
 import { observer } from 'mobx-react';
-import commonStore from './stores/commonStore';
+import configStore from './stores/configStore';
 
 type Props = {
   invert: boolean;
@@ -25,10 +25,10 @@ const Board = ({ invert }: Props) => {
             shadowOffsetX={3}
             shadowOffsetY={5}
             shadowOpacity={100}
-            x={x * commonStore.pieceSize}
-            y={y * commonStore.pieceSize}
-            width={commonStore.pieceSize}
-            height={commonStore.pieceSize}
+            x={x * configStore.pieceSize}
+            y={y * configStore.pieceSize}
+            width={configStore.pieceSize}
+            height={configStore.pieceSize}
             fill={(y % 2 === 0 && x % 2 === 0) || (y % 2 === 1 && x % 2 === 1) ? colors[0] : colors[1]}
           />
         )),

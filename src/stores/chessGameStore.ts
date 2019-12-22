@@ -3,6 +3,7 @@ import { observable, computed, action } from 'mobx';
 import { toBoardCoord, fromBoardCoord, getWebsocketMessage, invertY } from './helpers';
 import Player from './player';
 import ChessBoard from './chessBoard';
+import configStore from './configStore';
 
 class ChessGameStore implements IChessGameStore {
   @observable id: string;
@@ -18,9 +19,7 @@ class ChessGameStore implements IChessGameStore {
 
   constructor(id: string) {
     this.id = id;
-    this.socket = new WebSocket(`wss://pichess-backend.herokuapp.com/0.0.0.0/${this.id}`);
-    // this.socket = new WebSocket(`ws://localhost:9000/${this.id}`);
-
+    this.socket = new WebSocket(configStore.websocketUrl.replace('{id}', this.id));
     this.player = new Player(this.id);
     this.board = new ChessBoard([], this.shouldInvertBoard);
     this.socket.onopen = () => {

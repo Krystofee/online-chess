@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image } from 'react-konva';
 import { observer } from 'mobx-react';
-import commonStore from './stores/commonStore';
+import configStore from './stores/configStore';
 import { blackPieces, whitePieces } from './Images';
 
 type Props = {
@@ -18,8 +18,8 @@ const Piece = ({ game, piece }: Props) => (
     draggable={game.onMove === piece.color && game.player.color === piece.color}
     x={piece.renderPosition.x}
     y={piece.renderPosition.y}
-    width={commonStore.pieceSize}
-    height={commonStore.pieceSize}
+    width={configStore.pieceSize}
+    height={configStore.pieceSize}
     image={piece.color === 'B' ? blackPieces[piece.type] : whitePieces[piece.type]}
     onClick={() => {
       game.selectPiece(piece);

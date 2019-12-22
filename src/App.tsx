@@ -10,10 +10,6 @@ const App = () => {
 
   return (
     <div className="center" style={{ width: 800 }}>
-      <div className="center">
-        <h1>Chess</h1>
-      </div>
-
       <div className="text-center">
         <div style={{ paddingTop: 100 }}>
           <button className="pure-button pure-button-primary button-xlarge" type="button" onClick={createGame}>

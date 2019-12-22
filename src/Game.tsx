@@ -3,7 +3,7 @@ import { Stage } from 'react-konva';
 import { observer } from 'mobx-react';
 import { RouteComponentProps } from 'react-router';
 
-import commonStore from './stores/commonStore';
+import configStore from './stores/configStore';
 import ChessGameStore from './stores/chessGameStore';
 import Board from './Board';
 import Pieces from './Pieces';
@@ -31,25 +31,10 @@ const App = ({
 
   if (!chessGame) return null;
 
-  const size = commonStore.size;
+  const size = configStore.size;
 
   return (
     <div className="center" style={{ width: size }}>
-      <div className="center">
-        <h1>Chess</h1>
-        <button onClick={() => window.location.replace('/')} type="button">
-          back
-        </button>
-        <button
-          onClick={() => {
-            chessGame.board.invert = !chessGame.board.invert;
-          }}
-          type="button"
-        >
-          rotate
-        </button>
-      </div>
-
       {!chessGame.socketReady ? (
         <div className="center">
           <p>... connecting</p>
@@ -68,7 +53,7 @@ const App = ({
                     <PossibleMovesOverlay game={chessGame} />
                   </Stage>
                 </div>
-                {/* <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div
                     style={{
                       padding: '1em',
@@ -85,7 +70,7 @@ const App = ({
                   >
                     08:51
                   </div>
-                </div> */}
+                </div>
               </div>
             </>
           ) : (
@@ -107,6 +92,19 @@ const App = ({
           )}
         </div>
       )}
+      <div className="center">
+        <button onClick={() => window.location.replace('/')} type="button">
+          back
+        </button>
+        <button
+          onClick={() => {
+            chessGame.board.invert = !chessGame.board.invert;
+          }}
+          type="button"
+        >
+          rotate
+        </button>
+      </div>
     </div>
   );
 };

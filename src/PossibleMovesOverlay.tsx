@@ -1,7 +1,7 @@
 import React from 'react';
 import { Layer, Rect } from 'react-konva';
 import { observer } from 'mobx-react';
-import commonStore from './stores/commonStore';
+import configStore from './stores/configStore';
 
 type Props = {
   game: IChessGameStore;
@@ -15,8 +15,8 @@ const PossibleMovesOverlay = ({ game }: Props) => {
           key={`${x}${y}`}
           x={x}
           y={y}
-          width={commonStore.pieceSize}
-          height={commonStore.pieceSize}
+          width={configStore.pieceSize}
+          height={configStore.pieceSize}
           fill="#00000010"
           onClick={() => {
             game.moveSelectedPiece({ x, y });

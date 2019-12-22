@@ -1,20 +1,20 @@
-import commonStore from './commonStore';
+import configStore from './configStore';
 
 export const toBoardCoord = (coord: Coord) =>
   ({
-    x: (coord.x - 1) * commonStore.pieceSize,
-    y: (coord.y - 1) * commonStore.pieceSize,
+    x: (coord.x - 1) * configStore.pieceSize,
+    y: (coord.y - 1) * configStore.pieceSize,
   } as BoardCoord);
 
 export const fromBoardCoord = (coord: BoardCoord) =>
   ({
-    x: Math.floor((coord.x + commonStore.pieceSize / 2) / commonStore.pieceSize) + 1,
-    y: Math.floor((coord.y + commonStore.pieceSize / 2) / commonStore.pieceSize) + 1,
+    x: Math.floor((coord.x + configStore.pieceSize / 2) / configStore.pieceSize) + 1,
+    y: Math.floor((coord.y + configStore.pieceSize / 2) / configStore.pieceSize) + 1,
   } as Coord);
 
 export const invertY = (coord: BoardCoord) => ({
   ...coord,
-  y: commonStore.size - coord.y - commonStore.pieceSize,
+  y: configStore.size - coord.y - configStore.pieceSize,
 });
 
 export const findMove = (moves: Move[], coord: Coord) =>
@@ -87,3 +87,5 @@ export const getWebsocketMessage = (action: ClientAction, data: object) => {
 };
 
 export const getInverseColor = (color: PieceColor) => (color === 'W' ? 'B' : 'W');
+
+export const isProduction = () => process.env.NODE_ENV !== 'development';
