@@ -1,6 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import { uuid } from 'uuidv4';
+import Flexbox from './Flexbox';
 
 const App = () => {
   const createGame = () => {
@@ -27,7 +28,7 @@ const App = () => {
   ];
 
   return (
-    <div style={{ padding: '1rem' }}>
+    <Flexbox justifyContent="center" style={{ padding: '1rem' }}>
       <div className="tiles">
         {gameModes.map((row) => (
           <div className="tiles-row">
@@ -43,7 +44,7 @@ const App = () => {
           </div>
         ))}
       </div>
-    </div>
+    </Flexbox>
   );
 };
 

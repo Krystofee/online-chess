@@ -3,16 +3,16 @@ import { Stage } from 'react-konva';
 import { observer } from 'mobx-react';
 import { RouteComponentProps } from 'react-router';
 
-import configStore from './stores/configStore';
-import ChessGameStore from './stores/chessGameStore';
 import Board from './Board';
 import Pieces from './Pieces';
 import PossibleMovesUnderlay from './PossibleMovesUnderlay';
 import PossibleMovesOverlay from './PossibleMovesOverlay';
-import { useWindowSize } from './stores/hooks';
-import Flexbox from './Flexbox';
 import PlayerStats from './PlayerStats';
 import ActionBar from './ActionBar';
+import Flexbox from '../Flexbox';
+import { useWindowSize } from '../stores/hooks';
+import configStore from '../stores/configStore';
+import ChessGameStore from '../stores/chessGameStore';
 
 type RouteProps = RouteComponentProps<{
   gameId: string;
@@ -25,10 +25,6 @@ const App = ({
 }: RouteProps) => {
   const [chessGame, setChessGame] = useState<ChessGameStore | null>(null);
   const windowSize = useWindowSize();
-
-  const startGame = () => {
-    if (chessGame) chessGame.startGame();
-  };
 
   useEffect(() => {
     const size = Math.min(windowSize.x, windowSize.y);

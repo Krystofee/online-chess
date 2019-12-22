@@ -1,7 +1,7 @@
 import React from 'react';
 import { Layer, Circle } from 'react-konva';
 import { observer } from 'mobx-react';
-import configStore from './stores/configStore';
+import configStore from '../stores/configStore';
 
 type Props = {
   game: IChessGameStore;

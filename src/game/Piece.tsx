@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image } from 'react-konva';
 import { observer } from 'mobx-react';
-import configStore from './stores/configStore';
+import configStore from '../stores/configStore';
 import { blackPieces, whitePieces } from './Images';
 
 type Props = {

@@ -20,6 +20,7 @@
     "uuidv4": "^6.0.0"
   },
   "scripts": {
+    "development": "react-scripts start",
     "start": "serve -s build",
     "build": "react-scripts build",
     "test": "react-scripts test",

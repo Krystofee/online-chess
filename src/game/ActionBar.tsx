@@ -1,5 +1,5 @@
 import React from 'react';
-import Flexbox from './Flexbox';
+import Flexbox from '../Flexbox';
 
 type Props = {
   game: IChessGameStore;

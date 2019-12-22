@@ -6,7 +6,7 @@ import 'normalize.css';
 
 import './index.css';
 import App from './App';
-import Game from './Game';
+import Game from './game/Game';
 import * as serviceWorker from './serviceWorker';
 
 const Chess = () => (
