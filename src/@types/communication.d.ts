@@ -1,4 +1,4 @@
-declare type ServerAction = 'PLAYER_STATE' | 'GAME_STATE';
+declare type ServerAction = 'PLAYER_STATE' | 'GAME_STATE' | 'TIMER';
 
 declare type PlayerState = 'INIT' | 'CONNECTED' | 'PLAYING';
 
@@ -25,6 +25,7 @@ declare type ServerGameState = {
   players: string[];
   board: SerializedPiece[];
   on_move: PieceColor;
+  remaining: number;
 };
 
 declare type ServerPreGame = {
@@ -32,7 +33,13 @@ declare type ServerPreGame = {
   color: PieceColor;
 };
 
-declare type ServerData = ServerPlayerState | ServerGameState | ServerPreGame;
+declare type ServerTimer = {
+  server_time: number;
+  remaining_white: number;
+  remaining_black: number;
+};
+
+declare type ServerData = ServerPlayerState | ServerGameState | ServerPreGame | ServerTimer;
 
 declare type ServerMessage = [ServerAction, ServerData];
 

@@ -89,3 +89,16 @@ export const getWebsocketMessage = (action: ClientAction, data: object) => {
 export const getInverseColor = (color: PieceColor) => (color === 'W' ? 'B' : 'W');
 
 export const isProduction = () => process.env.NODE_ENV !== 'development';
+
+export const toTime = (time: number) => {
+  const hours = Math.floor(time / 3600);
+  time -= hours * 3600;
+  const minutes = Math.floor(time / 60);
+  time -= minutes * 60;
+  const seconds = Math.floor(time);
+  return {
+    hours,
+    minutes,
+    seconds,
+  };
+};

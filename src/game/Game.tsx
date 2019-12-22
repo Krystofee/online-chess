@@ -13,6 +13,7 @@ import Flexbox from '../Flexbox';
 import { useWindowSize } from '../stores/hooks';
 import configStore from '../stores/configStore';
 import ChessGameStore from '../stores/chessGameStore';
+import { getInverseColor } from '../stores/helpers';
 
 type RouteProps = RouteComponentProps<{
   gameId: string;
@@ -52,7 +53,7 @@ const App = ({
         <div className="center" style={{ width: configStore.gameSize }}>
           {chessGame.state === 'PLAYING' ? (
             <>
-              <PlayerStats game={chessGame} />
+              <PlayerStats game={chessGame} color={getInverseColor(chessGame.player.color!)} />
               <Flexbox direction="row" justifyContent="center">
                 <div className="shadow">
                   <Stage width={configStore.gameSize} height={configStore.gameSize}>
@@ -63,7 +64,7 @@ const App = ({
                   </Stage>
                 </div>
               </Flexbox>
-              <PlayerStats game={chessGame} />
+              <PlayerStats game={chessGame} color={chessGame.player.color!} />
               <ActionBar game={chessGame} />
             </>
           ) : (

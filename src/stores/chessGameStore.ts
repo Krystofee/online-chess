@@ -4,6 +4,7 @@ import { toBoardCoord, fromBoardCoord, getWebsocketMessage, invertY } from './he
 import Player from './player';
 import ChessBoard from './chessBoard';
 import configStore from './configStore';
+import GameTimer from './GameTimer';
 
 class ChessGameStore implements IChessGameStore {
   @observable id: string;
@@ -17,6 +18,8 @@ class ChessGameStore implements IChessGameStore {
   @observable socket: WebSocket;
   @observable socketReady: boolean = false;
 
+  timer: IChessTimer;
+
   constructor(id: string) {
     this.id = id;
     this.socket = new WebSocket(configStore.websocketUrl.replace('{id}', this.id));
@@ -26,6 +29,7 @@ class ChessGameStore implements IChessGameStore {
       this.socketReady = true;
       this.socket.send(getWebsocketMessage('IDENTIFY', { id: this.player.id }));
     };
+    this.timer = new GameTimer(this);
 
     this.socket.onmessage = (event) => {
       const data: ServerMessage = JSON.parse(event.data);
@@ -34,6 +38,8 @@ class ChessGameStore implements IChessGameStore {
         this.loadState(data[1] as ServerGameState);
       } else if (data[0] === 'PLAYER_STATE' && this.player) {
         this.player.loadState(data[1] as ServerPlayerState);
+      } else if (data[0] === 'TIMER') {
+        this.timer.loadState(data[1] as ServerTimer);
       }
     };
   }

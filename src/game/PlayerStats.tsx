@@ -1,16 +1,22 @@
 import React from 'react';
+import { observer } from 'mobx-react';
 import Flexbox from '../Flexbox';
 
 type Props = {
   game: IChessGameStore;
+  color: PieceColor;
 };
 
-const PlayerStats = ({ game }: Props) => {
+const PlayerStats = ({ game, color }: Props) => {
+  const remaining = color === 'W' ? game.timer.remainingWhiteTime : game.timer.remainingBlackTime;
+
   return (
     <Flexbox justifyContent="space-between" alignItems="center" style={{ height: '3rem', color: 'white' }}>
       <div>
         <div style={{ padding: '0.75rem 0.5rem', backgroundColor: '#ffffff10' }}>
-          <span style={{ fontSize: '1.5rem' }}>5:34</span>
+          <span style={{ fontSize: '1.5rem' }}>
+            {remaining.minutes}:{remaining.seconds}
+          </span>
         </div>
       </div>
       <div>
@@ -23,4 +29,4 @@ const PlayerStats = ({ game }: Props) => {
   );
 };
 
-export default PlayerStats;
+export default observer(PlayerStats);
