@@ -14,6 +14,7 @@ import { useWindowSize } from '../stores/hooks';
 import configStore from '../stores/configStore';
 import ChessGameStore from '../stores/chessGameStore';
 import { getInverseColor } from '../stores/helpers';
+import GameOverOverlay from './GameOverOverlay';
 
 type RouteProps = RouteComponentProps<{
   gameId: string;
@@ -53,9 +54,9 @@ const App = ({
         </div>
       ) : (
         <div className="center" style={{ width: configStore.gameSize }}>
-          {chessGame.state === 'PLAYING' ? (
+          {chessGame.state === 'PLAYING' || chessGame.state === 'ENDED' ? (
             <>
-              <PlayerStats game={chessGame} player={chessGame.playersData[getInverseColor(chessGame.player.color!)]} />
+              <PlayerStats player={chessGame.playersData[getInverseColor(chessGame.player.color!)]} />
               <Flexbox direction="row" justifyContent="center">
                 <div className="shadow">
                   <Stage width={configStore.gameSize} height={configStore.gameSize}>
@@ -63,10 +64,11 @@ const App = ({
                     <PossibleMovesUnderlay game={chessGame} />
                     <Pieces game={chessGame} />
                     <PossibleMovesOverlay game={chessGame} />
+                    <GameOverOverlay game={chessGame} />
                   </Stage>
                 </div>
               </Flexbox>
-              <PlayerStats game={chessGame} player={chessGame.playersData[chessGame.player.color!]} />
+              <PlayerStats player={chessGame.playersData[chessGame.player.color!]} />
               <ActionBar game={chessGame} />
             </>
           ) : (

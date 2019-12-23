@@ -73,6 +73,12 @@ class ChessBoard implements IChessBoard {
     return false;
   };
 
+  isCheckMate = () => {
+    if (this.pieces.filter((item) => item.color === 'W' && item.possibleMoves.length > 0).length === 0) return 'W';
+    if (this.pieces.filter((item) => item.color === 'B' && item.possibleMoves.length > 0).length === 0) return 'B';
+    return null;
+  };
+
   applyTemporaryMove = (move: Move) => {
     const piece = this.pieces.find((item) => item.id === move.piece.id);
     const takes = move.takes;

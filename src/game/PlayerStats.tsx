@@ -4,11 +4,12 @@ import Flexbox from '../Flexbox';
 import { renderTime } from '../stores/helpers';
 
 type Props = {
-  game: IChessGameStore;
-  player: IPlayerData;
+  player?: IPlayerData;
 };
 
-const PlayerStats = ({ game, player }: Props) => {
+const PlayerStats = ({ player }: Props) => {
+  if (!player) return null;
+
   return (
     <Flexbox justifyContent="space-between" alignItems="center" style={{ height: '3rem', color: 'white' }}>
       <Flexbox alignItems="center">

@@ -14,7 +14,7 @@ declare type ServerPlayerDataState = {
   remaining_time: number;
 };
 
-declare type GameState = 'WAITING' | 'PLAYING';
+declare type GameState = 'WAITING' | 'PLAYING' | 'ENDED';
 
 declare type SerializedPiece = {
   id: string;

@@ -5,6 +5,7 @@ declare interface IChessBoard {
 
   isThreatened(coord: Coord, byColor: PieceColor): boolean;
   inCheck(color: PieceColor): boolean;
+  isCheckMate(): PieceColor | null;
 
   applyTemporaryMove(move: Move);
   unapplyTemporaryMove();

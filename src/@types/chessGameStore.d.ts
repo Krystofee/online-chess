@@ -8,6 +8,8 @@ declare type BoardCoord = {
   y: number;
 };
 
+declare type GameEndType = 'CHECKMATE' | 'TIME' | 'DRAW' | 'STALEMATE';
+
 declare interface IChessGameStore extends Broadcaster {
   id: string;
   onMove: PieceColor;
@@ -23,6 +25,10 @@ declare interface IChessGameStore extends Broadcaster {
   selectPiece: (piece: Piece) => void;
   unselectPiece: () => void;
   possibleMoves: Move[];
+  checkGameEnd: () => void;
+
+  winner: PieceColor | null;
+  endType: GameEndType | null;
 
   movePiece(piece: IPiece, coord: BoardCoord): void;
   moveSelectedPiece(coord: BoardCoord): void;

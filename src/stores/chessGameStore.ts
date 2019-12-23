@@ -1,6 +1,6 @@
 import { observable, computed, action } from 'mobx';
 
-import { toBoardCoord, fromBoardCoord, getWebsocketMessage, invertY } from './helpers';
+import { toBoardCoord, fromBoardCoord, getWebsocketMessage, invertY, getInverseColor } from './helpers';
 import Player from './player';
 import ChessBoard from './chessBoard';
 import configStore from './configStore';
@@ -16,6 +16,9 @@ class ChessGameStore implements IChessGameStore {
   @observable player: IPlayer;
   @observable playersData: { W: IPlayerData; B: IPlayerData };
   @observable board: IChessBoard;
+
+  @observable winner: PieceColor | null = null;
+  @observable endType: GameEndType | null = null;
 
   @observable socket: WebSocket;
   @observable socketReady: boolean = false;
@@ -58,6 +61,17 @@ class ChessGameStore implements IChessGameStore {
     state.players.map((data) => {
       this.playersData[data.color].loadState(data);
     });
+
+    this.checkGameEnd();
+  };
+
+  @action checkGameEnd = () => {
+    const loser = this.board.isCheckMate();
+    if (loser) {
+      this.state = 'ENDED';
+      this.winner = getInverseColor(loser);
+      this.socket.close();
+    }
   };
 
   @action startGame = () => {
