@@ -8,9 +8,7 @@ type Props = {
 const ActionBar = ({ game }: Props) => {
   return (
     <Flexbox justifyContent="flex-end">
-      <button onClick={() => window.location.replace('/')} type="button">
-        back
-      </button>
+      <div></div>
     </Flexbox>
   );
 };
