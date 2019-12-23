@@ -5,6 +5,7 @@ import Player from './player';
 import ChessBoard from './chessBoard';
 import configStore from './configStore';
 import GameTimer from './GameTimer';
+import PlayerData from './playerData';
 
 class ChessGameStore implements IChessGameStore {
   @observable id: string;
@@ -13,6 +14,7 @@ class ChessGameStore implements IChessGameStore {
   @observable canMove: boolean = false;
   @observable selectedPiece: IPiece | null = null;
   @observable player: IPlayer;
+  @observable playersData: { W: IPlayerData; B: IPlayerData };
   @observable board: IChessBoard;
 
   @observable socket: WebSocket;
@@ -24,6 +26,7 @@ class ChessGameStore implements IChessGameStore {
     this.id = id;
     this.socket = new WebSocket(configStore.websocketUrl.replace('{id}', this.id));
     this.player = new Player(this.id);
+    this.playersData = { W: new PlayerData('W'), B: new PlayerData('B') };
     this.board = new ChessBoard([], this.shouldInvertBoard);
     this.socket.onopen = () => {
       this.socketReady = true;
@@ -49,6 +52,9 @@ class ChessGameStore implements IChessGameStore {
     this.onMove = state.on_move;
     this.canMove = true;
     this.board.loadState(state.board);
+    state.players.map((data) => {
+      this.playersData[data.color].loadState(data);
+    });
   };
 
   @action startGame = () => {

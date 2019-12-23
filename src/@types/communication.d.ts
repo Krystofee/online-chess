@@ -8,6 +8,12 @@ declare type ServerPlayerState = {
   color: PieceColor;
 };
 
+declare type ServerPlayerDataState = {
+  color: PieceColor;
+  state: PlayerDataState;
+  remaining_time: number;
+};
+
 declare type GameState = 'WAITING' | 'PLAYING';
 
 declare type SerializedPiece = {
@@ -22,10 +28,10 @@ declare type SerializedPiece = {
 declare type ServerGameState = {
   id: string;
   state: GameState;
-  players: string[];
+  players: ServerPlayerDataState[];
   board: SerializedPiece[];
   on_move: PieceColor;
-  remaining: number;
+  timer: ServerTimer;
 };
 
 declare type ServerPreGame = {
@@ -35,8 +41,7 @@ declare type ServerPreGame = {
 
 declare type ServerTimer = {
   server_time: number;
-  remaining_white: number;
-  remaining_black: number;
+  players: ServerPlayerDataState[];
 };
 
 declare type ServerData = ServerPlayerState | ServerGameState | ServerPreGame | ServerTimer;

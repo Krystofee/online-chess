@@ -1,8 +1,3 @@
-declare interface IChessTimer {
-  remainingWhite: number;
-  remainingWhiteTime: Time;
-  remainingBlack: number;
-  remainingBlackTime: Time;
-
+declare interface IChessTimer extends Broadcaster {
   loadState: (state: ServerTimer) => void;
 }

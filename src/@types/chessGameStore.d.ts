@@ -14,6 +14,7 @@ declare interface IChessGameStore extends Broadcaster {
   canMove: boolean;
   state: GameState;
   player: IPlayer;
+  playersData: Players | null;
   board: IChessBoard;
   timer: IChessTimer;
 

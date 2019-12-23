@@ -53,7 +53,7 @@ const App = ({
         <div className="center" style={{ width: configStore.gameSize }}>
           {chessGame.state === 'PLAYING' ? (
             <>
-              <PlayerStats game={chessGame} color={getInverseColor(chessGame.player.color!)} />
+              <PlayerStats game={chessGame} player={chessGame.playersData[getInverseColor(chessGame.player.color!)]} />
               <Flexbox direction="row" justifyContent="center">
                 <div className="shadow">
                   <Stage width={configStore.gameSize} height={configStore.gameSize}>
@@ -64,7 +64,7 @@ const App = ({
                   </Stage>
                 </div>
               </Flexbox>
-              <PlayerStats game={chessGame} color={chessGame.player.color!} />
+              <PlayerStats game={chessGame} player={chessGame.playersData[chessGame.player.color!]} />
               <ActionBar game={chessGame} />
             </>
           ) : (
