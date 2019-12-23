@@ -4,9 +4,9 @@ import { uuid } from 'uuidv4';
 import Flexbox from './Flexbox';
 
 const App = () => {
-  const createGame = () => {
+  const createGame = (length: number, perMove: number) => () => {
     const gameId = uuid();
-    window.location.assign(`/${gameId}/`);
+    window.location.assign(`/${gameId}/${length * 60}/${perMove}/`);
   };
 
   const gameModes = [
@@ -33,7 +33,7 @@ const App = () => {
         {gameModes.map((row) => (
           <div className="tiles-row">
             {row.map((mode) => (
-              <div className="tiles-tile" onClick={createGame} role="presentation">
+              <div className="tiles-tile" onClick={createGame(mode[0], mode[1])} role="presentation">
                 <div>
                   <div className="tiles-tile-content text-center">
                     {mode[0]}|{mode[1]}

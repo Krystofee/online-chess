@@ -1,4 +1,4 @@
-declare type PlayerDataState = 'CONNECTED' | 'DISCONNECTED' | 'PLAYING' | 'ENDED';
+declare type PlayerDataState = 'CONNECTED' | 'DISCONNECTED';
 
 declare interface IPlayerData extends Broadcaster {
   color: PieceColor;

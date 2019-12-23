@@ -22,7 +22,7 @@ class ChessGameStore implements IChessGameStore {
 
   timer: IChessTimer;
 
-  constructor(id: string) {
+  constructor(id: string, total_length?: string, per_move?: string) {
     this.id = id;
     this.socket = new WebSocket(configStore.websocketUrl.replace('{id}', this.id));
     this.player = new Player(this.id);
@@ -31,6 +31,9 @@ class ChessGameStore implements IChessGameStore {
     this.socket.onopen = () => {
       this.socketReady = true;
       this.socket.send(getWebsocketMessage('IDENTIFY', { id: this.player.id }));
+      if (total_length !== undefined && per_move !== undefined) {
+        this.socket.send(getWebsocketMessage('SETTING', { total_length, per_move }));
+      }
     };
     this.timer = new GameTimer(this);
 

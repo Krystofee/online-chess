@@ -1,6 +1,7 @@
 import React from 'react';
 import { observer } from 'mobx-react';
 import Flexbox from '../Flexbox';
+import { renderTime } from '../stores/helpers';
 
 type Props = {
   game: IChessGameStore;
@@ -12,9 +13,7 @@ const PlayerStats = ({ game, player }: Props) => {
     <Flexbox justifyContent="space-between" alignItems="center" style={{ height: '3rem', color: 'white' }}>
       <div>
         <div style={{ padding: '0.75rem 0.5rem', backgroundColor: '#ffffff10' }}>
-          <span style={{ fontSize: '1.5rem' }}>
-            {player.remainingTime.minutes}:{player.remainingTime.seconds}
-          </span>
+          <span style={{ fontSize: '1.5rem' }}>{renderTime(player.remainingTime)}</span>
         </div>
       </div>
       <div>

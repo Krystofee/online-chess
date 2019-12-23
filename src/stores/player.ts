@@ -4,7 +4,7 @@ import { uuid } from 'uuidv4';
 class Player implements IPlayer {
   @observable id: string;
   @observable color: PieceColor | null = null;
-  @observable state: PlayerState = 'INIT';
+  @observable state: PlayerState = 'CONNECTED';
 
   constructor(gameId: string) {
     // detect or generate player id

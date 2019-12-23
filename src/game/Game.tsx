@@ -17,11 +17,13 @@ import { getInverseColor } from '../stores/helpers';
 
 type RouteProps = RouteComponentProps<{
   gameId: string;
+  length?: string;
+  perMove?: string;
 }>;
 
 const App = ({
   match: {
-    params: { gameId },
+    params: { gameId, length, perMove },
   },
 }: RouteProps) => {
   const [chessGame, setChessGame] = useState<ChessGameStore | null>(null);
@@ -38,7 +40,7 @@ const App = ({
   }, [windowSize]);
 
   useEffect(() => {
-    setChessGame(new ChessGameStore(gameId));
+    setChessGame(new ChessGameStore(gameId, length, perMove));
   }, [gameId]);
 
   if (!chessGame) return null;

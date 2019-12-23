@@ -16,6 +16,7 @@ const Chess = () => (
         <Switch>
           <Route exact path="/" component={App} />
           <Route exact path="/:gameId/" component={Game} />
+          <Route exact path="/:gameId/:length/:perMove/" component={Game} />
         </Switch>
       </Router>
     </div>

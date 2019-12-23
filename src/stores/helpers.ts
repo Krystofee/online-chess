@@ -102,3 +102,11 @@ export const toTime = (time: number) => {
     seconds,
   };
 };
+
+export const renderTime = (time: Time) => {
+  const zeroPad = (n: number) => n.toString().padStart(2, '0');
+
+  let timeStr = `${zeroPad(time.minutes)}:${zeroPad(time.seconds)}`;
+  if (time.hours) timeStr = `${zeroPad(time.hours)}:${timeStr}`;
+  return timeStr;
+};

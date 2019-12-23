@@ -1,6 +1,6 @@
 declare type ServerAction = 'PLAYER_STATE' | 'GAME_STATE' | 'TIMER';
 
-declare type PlayerState = 'INIT' | 'CONNECTED' | 'PLAYING';
+declare type PlayerState = 'CONNECTED' | 'DISCONNECTED';
 
 declare type ServerPlayerState = {
   id: string;
@@ -48,7 +48,7 @@ declare type ServerData = ServerPlayerState | ServerGameState | ServerPreGame | 
 
 declare type ServerMessage = [ServerAction, ServerData];
 
-declare type ClientAction = 'CONNECT' | 'MOVE' | 'IDENTIFY';
+declare type ClientAction = 'CONNECT' | 'MOVE' | 'IDENTIFY' | 'SETTING';
 
 declare type ClientSendData = object;
 
