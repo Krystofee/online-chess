@@ -8,19 +8,8 @@ type Props = {
 const ActionBar = ({ game }: Props) => {
   return (
     <Flexbox justifyContent="flex-end">
-      <button>
-        <span role="img">🍔</span>
-      </button>
       <button onClick={() => window.location.replace('/')} type="button">
         back
-      </button>
-      <button
-        onClick={() => {
-          game.board.invert = !game.board.invert;
-        }}
-        type="button"
-      >
-        rotate
       </button>
     </Flexbox>
   );

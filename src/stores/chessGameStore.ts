@@ -27,7 +27,7 @@ class ChessGameStore implements IChessGameStore {
     this.socket = new WebSocket(configStore.websocketUrl.replace('{id}', this.id));
     this.player = new Player(this.id);
     this.playersData = { W: new PlayerData('W'), B: new PlayerData('B') };
-    this.board = new ChessBoard([], this.shouldInvertBoard);
+    this.board = new ChessBoard([]);
     this.socket.onopen = () => {
       this.socketReady = true;
       this.socket.send(getWebsocketMessage('IDENTIFY', { id: this.player.id }));
@@ -87,7 +87,7 @@ class ChessGameStore implements IChessGameStore {
     if (!this.selectedPiece) return [];
     return this.selectedPiece.possibleMoves.map((item) => ({
       ...item,
-      position: this.board.invert ? invertY(toBoardCoord(item.position)) : toBoardCoord(item.position),
+      position: configStore.invert ? invertY(toBoardCoord(item.position)) : toBoardCoord(item.position),
     }));
   }
 
@@ -98,7 +98,7 @@ class ChessGameStore implements IChessGameStore {
   @action movePiece = (piece: IPiece, boardCoord: BoardCoord) => {
     if (!this.canMove || this.onMove !== piece.color || this.player.color !== piece.color) return;
 
-    const move = piece.move(fromBoardCoord(this.board.invert ? invertY(boardCoord) : boardCoord));
+    const move = piece.move(fromBoardCoord(configStore.invert ? invertY(boardCoord) : boardCoord));
     if (move) {
       const takes = move.takes;
       if (takes) {

@@ -1,6 +1,7 @@
 import Konva from 'konva';
 import { uuid } from 'uuidv4';
 import { toBoardCoord, findMove, invertY } from '../helpers';
+import configStore from '../configStore';
 
 class BasePiece implements IPiece {
   id: string;
@@ -21,7 +22,7 @@ class BasePiece implements IPiece {
   }
 
   get renderPosition() {
-    return this.board.invert ? invertY(toBoardCoord(this.position)) : toBoardCoord(this.position);
+    return configStore.invert ? invertY(toBoardCoord(this.position)) : toBoardCoord(this.position);
   }
 
   move: (coord: Coord, force?: boolean) => Move | null = (coord: Coord, force = false) => {

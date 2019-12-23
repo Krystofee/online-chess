@@ -1,5 +1,6 @@
 import { action, observable } from 'mobx';
 import { uuid } from 'uuidv4';
+import configStore from './configStore';
 
 class Player implements IPlayer {
   @observable id: string;
@@ -21,6 +22,8 @@ class Player implements IPlayer {
     if (state.id === this.id) {
       this.color = state.color;
       this.state = state.state;
+
+      configStore.invert = state.color === 'W';
     }
   };
 }

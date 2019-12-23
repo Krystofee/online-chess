@@ -8,6 +8,7 @@ class ConfigStore implements IConfigStore {
 
   @observable gameSize = DEFAULT_GAME_SIZE;
   @observable isLandscape = false;
+  @observable invert = false;
   websocketUrl = isProduction() ? 'wss://pichess-backend.herokuapp.com/0.0.0.0/{id}' : 'ws://localhost:9000/{id}';
 
   @computed get pieceSize(): number {

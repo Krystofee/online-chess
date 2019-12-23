@@ -10,13 +10,11 @@ import { getInverseColor } from './helpers';
 
 class ChessBoard implements IChessBoard {
   @observable pieces: IPiece[];
-  @observable invert: boolean;
 
   reverseMove: Move | null = null;
 
-  constructor(pieces: IPiece[] = [], invert = false) {
+  constructor(pieces: IPiece[] = []) {
     this.pieces = pieces;
-    this.invert = invert;
   }
 
   @action loadState = (pieces: ServerGameState['board']) => {

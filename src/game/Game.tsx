@@ -59,7 +59,7 @@ const App = ({
               <Flexbox direction="row" justifyContent="center">
                 <div className="shadow">
                   <Stage width={configStore.gameSize} height={configStore.gameSize}>
-                    <Board invert={chessGame.board.invert} />
+                    <Board invert={configStore.invert} />
                     <PossibleMovesUnderlay game={chessGame} />
                     <Pieces game={chessGame} />
                     <PossibleMovesOverlay game={chessGame} />
