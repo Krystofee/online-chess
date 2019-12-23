@@ -61,8 +61,12 @@ class ChessGameStore implements IChessGameStore {
     state.players.map((data) => {
       this.playersData[data.color].loadState(data);
     });
+    this.winner = state.winner;
 
-    this.checkGameEnd();
+    // TODO: let backend decide everything...
+    if (!this.winner) {
+      this.checkGameEnd();
+    }
   };
 
   @action checkGameEnd = () => {

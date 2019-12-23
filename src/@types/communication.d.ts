@@ -32,6 +32,7 @@ declare type ServerGameState = {
   board: SerializedPiece[];
   on_move: PieceColor;
   timer: ServerTimer;
+  winner: PieceColor | null;
 };
 
 declare type ServerPreGame = {
