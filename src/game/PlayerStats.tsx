@@ -20,10 +20,10 @@ const PlayerStats = ({ game, player }: Props) => {
         </div>
       </Flexbox>
       <div>
-        <Flexbox alignItems="center" style={{ padding: '0.75rem 0.5rem' }}>
+        {/* <Flexbox alignItems="center" style={{ padding: '0.75rem 0.5rem' }}>
           <span style={{ fontSize: '1.3rem', letterSpacing: '0.2rem' }}>♞♜</span>
           <span style={{ fontSize: '0.8rem' }}>+8</span>
-        </Flexbox>
+        </Flexbox> */}
       </div>
     </Flexbox>
   );
