@@ -21,6 +21,9 @@ const PossibleMovesOverlay = ({ game }: Props) => {
           onClick={() => {
             game.moveSelectedPiece({ x, y });
           }}
+          onTap={() => {
+            game.moveSelectedPiece({ x, y });
+          }}
         />
       ))}
     </Layer>

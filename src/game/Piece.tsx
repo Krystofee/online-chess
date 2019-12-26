@@ -24,6 +24,9 @@ const Piece = ({ game, piece }: Props) => (
     onClick={() => {
       game.selectPiece(piece);
     }}
+    onTap={() => {
+      game.selectPiece(piece);
+    }}
     onDragStart={() => game.selectPiece(piece)}
     onDragEnd={(evt) => {
       game.movePiece(piece, { x: evt.target.x(), y: evt.target.y() });
