@@ -6,6 +6,7 @@ import ChessBoard from './chessBoard';
 import configStore from './configStore';
 import GameTimer from './GameTimer';
 import PlayerData from './playerData';
+import sounds from './sounds';
 
 class ChessGameStore implements IChessGameStore {
   @observable id: string;
@@ -54,6 +55,10 @@ class ChessGameStore implements IChessGameStore {
   }
 
   @action loadState = (state: ServerGameState) => {
+    if (this.state === 'WAITING' && state.state === 'PLAYING') {
+      this.onGameStart();
+    }
+
     this.state = state.state;
     this.onMove = state.on_move;
     this.canMove = true;
@@ -67,6 +72,10 @@ class ChessGameStore implements IChessGameStore {
     if (!this.winner) {
       this.checkGameEnd();
     }
+  };
+
+  @action onGameStart = () => {
+    sounds.playStart();
   };
 
   @action checkGameEnd = () => {
@@ -146,6 +155,8 @@ class ChessGameStore implements IChessGameStore {
       this.socket.send(getWebsocketMessage('MOVE', moveToObject(move) as object));
       this.canMove = false;
       this.unselectPiece();
+
+      sounds.playMove();
     }
   };
 }

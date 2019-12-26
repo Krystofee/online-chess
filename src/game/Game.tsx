@@ -15,6 +15,7 @@ import configStore from '../stores/configStore';
 import ChessGameStore from '../stores/chessGameStore';
 import { getInverseColor } from '../stores/helpers';
 import GameOverOverlay from './GameOverOverlay';
+import sounds from '../stores/sounds';
 
 type RouteProps = RouteComponentProps<{
   gameId: string;
