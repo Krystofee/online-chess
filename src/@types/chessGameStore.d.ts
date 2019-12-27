@@ -19,6 +19,7 @@ declare interface IChessGameStore extends Broadcaster {
   playersData: Players | null;
   board: IChessBoard;
   timer: IChessTimer;
+  preparedMove: Move | null;
 
   startGame: () => void;
 
@@ -30,6 +31,6 @@ declare interface IChessGameStore extends Broadcaster {
   winner: PieceColor | null;
   endType: GameEndType | null;
 
-  movePiece(piece: IPiece, coord: BoardCoord): void;
+  moveBoardPiece(piece: IPiece, coord: BoardCoord): void;
   moveSelectedPiece(coord: BoardCoord): void;
 }

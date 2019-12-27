@@ -1,6 +1,6 @@
 import { observable, computed, action } from 'mobx';
 
-import { toBoardCoord, fromBoardCoord, getWebsocketMessage, invertY, getInverseColor } from './helpers';
+import { getWebsocketMessage, getInverseColor, translateCoordFromBoard, translateCoordToBoard } from './helpers';
 import Player from './player';
 import ChessBoard from './chessBoard';
 import configStore from './configStore';
@@ -17,6 +17,8 @@ class ChessGameStore implements IChessGameStore {
   @observable player: IPlayer;
   @observable playersData: { W: IPlayerData; B: IPlayerData };
   @observable board: IChessBoard;
+
+  @observable preparedMove: Move | null = null;
 
   @observable winner: PieceColor | null = null;
   @observable endType: GameEndType | null = null;
@@ -59,6 +61,11 @@ class ChessGameStore implements IChessGameStore {
       this.onGameStart();
     }
 
+    let opponentMoved = false;
+    if (this.state === 'PLAYING' && this.onMove !== this.player.color && state.on_move === this.player.color) {
+      opponentMoved = true;
+    }
+
     this.state = state.state;
     this.onMove = state.on_move;
     this.canMove = true;
@@ -72,10 +79,16 @@ class ChessGameStore implements IChessGameStore {
     if (!this.winner) {
       this.checkGameEnd();
     }
+
+    if (opponentMoved) this.opponentMoved();
   };
 
   @action onGameStart = () => {
     sounds.playStart();
+  };
+
+  @action opponentMoved = () => {
+    this.performPreparedMove();
   };
 
   @action checkGameEnd = () => {
@@ -97,7 +110,7 @@ class ChessGameStore implements IChessGameStore {
 
   @action selectPiece = (piece: IPiece) => {
     this.unselectPiece();
-    if (this.canMove && piece.color === this.onMove && this.player.color === piece.color) {
+    if (this.player.color === piece.color) {
       this.selectedPiece = piece;
     }
   };
@@ -114,18 +127,41 @@ class ChessGameStore implements IChessGameStore {
     if (!this.selectedPiece) return [];
     return this.selectedPiece.possibleMoves.map((item) => ({
       ...item,
-      position: configStore.invert ? invertY(toBoardCoord(item.position)) : toBoardCoord(item.position),
+      position: translateCoordToBoard(item.position),
     }));
   }
 
   @action moveSelectedPiece = (boardCoord: BoardCoord) => {
-    if (this.selectedPiece) this.movePiece(this.selectedPiece, boardCoord);
+    if (this.selectedPiece) this.moveBoardPiece(this.selectedPiece, boardCoord);
   };
 
-  @action movePiece = (piece: IPiece, boardCoord: BoardCoord) => {
-    if (!this.canMove || this.onMove !== piece.color || this.player.color !== piece.color) return;
+  @action performPreparedMove = () => {
+    if (this.preparedMove) {
+      const { piece, position } = this.preparedMove;
+      this.movePiece(piece, position);
+      this.preparedMove = null;
+    }
+  };
 
-    const move = piece.move(fromBoardCoord(configStore.invert ? invertY(boardCoord) : boardCoord));
+  @action moveBoardPiece = (piece: IPiece, boardCoord: BoardCoord) =>
+    this.movePiece(piece, translateCoordFromBoard(boardCoord));
+
+  @action movePiece = (piece: IPiece, coord: Coord) => {
+    if (this.player.color !== piece.color) return;
+
+    // store move in this.preparedMove when not on move, which will be performed
+    // automatically as possible
+    if (this.onMove !== piece.color) {
+      this.preparedMove = {
+        piece,
+        position: coord,
+      };
+      this.unselectPiece();
+      return;
+    }
+
+    const move = piece.move(coord);
+
     if (move) {
       const takes = move.takes;
       if (takes) {

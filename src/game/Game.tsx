@@ -15,7 +15,7 @@ import configStore from '../stores/configStore';
 import ChessGameStore from '../stores/chessGameStore';
 import { getInverseColor } from '../stores/helpers';
 import GameOverOverlay from './GameOverOverlay';
-import sounds from '../stores/sounds';
+import PreparedMove from './PreparedMove';
 
 type RouteProps = RouteComponentProps<{
   gameId: string;
@@ -62,6 +62,7 @@ const App = ({
                 <div className="shadow">
                   <Stage width={configStore.gameSize} height={configStore.gameSize}>
                     <Board invert={configStore.invert} />
+                    <PreparedMove game={chessGame} />
                     <PossibleMovesUnderlay game={chessGame} />
                     <Pieces game={chessGame} />
                     <PossibleMovesOverlay game={chessGame} />
