@@ -1,12 +1,13 @@
 import { observable, computed, action } from 'mobx';
 
-import { getWebsocketMessage, getInverseColor, translateCoordFromBoard, translateCoordToBoard } from './helpers';
+import { getInverseColor, translateCoordFromBoard, translateCoordToBoard } from './helpers';
 import Player from './player';
 import ChessBoard from './chessBoard';
 import configStore from './configStore';
 import GameTimer from './GameTimer';
 import PlayerData from './playerData';
 import sounds from './sounds';
+import Websocket from './communication/websocket';
 
 class ChessGameStore implements IChessGameStore {
   @observable id: string;
@@ -23,37 +24,38 @@ class ChessGameStore implements IChessGameStore {
   @observable winner: PieceColor | null = null;
   @observable endType: GameEndType | null = null;
 
-  @observable socket: WebSocket;
+  @observable communicator: ICommunication;
   @observable socketReady: boolean = false;
 
   timer: IChessTimer;
 
   constructor(id: string, total_length?: string, per_move?: string) {
     this.id = id;
-    this.socket = new WebSocket(configStore.websocketUrl.replace('{id}', this.id));
     this.player = new Player(this.id);
     this.playersData = { W: new PlayerData('W'), B: new PlayerData('B') };
     this.board = new ChessBoard([]);
-    this.socket.onopen = () => {
-      this.socketReady = true;
-      this.socket.send(getWebsocketMessage('IDENTIFY', { id: this.player.id }));
-      if (total_length !== undefined && per_move !== undefined) {
-        this.socket.send(getWebsocketMessage('SETTING', { total_length, per_move }));
-      }
-    };
     this.timer = new GameTimer(this);
 
-    this.socket.onmessage = (event) => {
-      const data: ServerMessage = JSON.parse(event.data);
-
-      if (data[0] === 'GAME_STATE') {
-        this.loadState(data[1] as ServerGameState);
-      } else if (data[0] === 'PLAYER_STATE' && this.player) {
-        this.player.loadState(data[1] as ServerPlayerState);
-      } else if (data[0] === 'TIMER') {
-        this.timer.loadState(data[1] as ServerTimer);
-      }
-    };
+    this.communicator = new Websocket(
+      configStore.websocketUrl.replace('{id}', this.id),
+      () => {
+        this.socketReady = true;
+        this.communicator.send('IDENTIFY', { id: this.player.id });
+        if (total_length !== undefined && per_move !== undefined) {
+          this.communicator.send('SETTING', { total_length, per_move });
+        }
+      },
+      (event) => {
+        const data: ServerMessage = JSON.parse(event.data);
+        if (data[0] === 'GAME_STATE') {
+          this.loadState(data[1] as ServerGameState);
+        } else if (data[0] === 'PLAYER_STATE' && this.player) {
+          this.player.loadState(data[1] as ServerPlayerState);
+        } else if (data[0] === 'TIMER') {
+          this.timer.loadState(data[1] as ServerTimer);
+        }
+      },
+    );
   }
 
   @action loadState = (state: ServerGameState) => {
@@ -96,7 +98,7 @@ class ChessGameStore implements IChessGameStore {
     if (loser) {
       this.state = 'ENDED';
       this.winner = getInverseColor(loser);
-      this.socket.close();
+      this.communicator.close();
     }
   };
 
@@ -105,7 +107,7 @@ class ChessGameStore implements IChessGameStore {
       return;
     }
 
-    this.socket.send(getWebsocketMessage('CONNECT', { id: this.player.id }));
+    this.communicator.send('CONNECT', { id: this.player.id });
   };
 
   @action selectPiece = (piece: IPiece) => {
@@ -188,7 +190,7 @@ class ChessGameStore implements IChessGameStore {
             }
           : null;
 
-      this.socket.send(getWebsocketMessage('MOVE', moveToObject(move) as object));
+      this.communicator.send('MOVE', moveToObject(move) as object);
       this.canMove = false;
       this.unselectPiece();
 

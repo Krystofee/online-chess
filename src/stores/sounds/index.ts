@@ -1,8 +1,8 @@
 import { Howl } from 'howler';
 import { observable, reaction } from 'mobx';
 
-const StartAudio = require('./sounds/start.mp3');
-const MoveAudio = require('./sounds/move.mp3');
+const StartAudio = require('./start.mp3');
+const MoveAudio = require('./move.mp3');
 
 class Sounds implements ISounds {
   @observable volume = 0.05;
