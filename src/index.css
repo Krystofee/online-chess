@@ -18,6 +18,14 @@ code {
   text-align: center;
 }
 
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
 .button-xsmall {
   font-size: 70%;
 }
@@ -87,4 +95,123 @@ code {
 
 .circle:before {
   content: ' \25CF';
+}
+
+.p-absolute {
+  position: absolute;
+}
+
+.p-relative {
+  position: relative;
+}
+
+.full-size {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.btn {
+  padding: 0.6rem;
+  margin: 0 0.2rem;
+  border-radius: 3px;
+  background-color: #fff;
+  border: 1px solid rgb(216, 216, 216);
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #f7f7f7;
+}
+
+.btn.primary {
+  color: white;
+  background-color: #4878c0;
+  border: 2px solid #3b67a9;
+}
+
+.btn.primary:hover {
+  background-color: #3b67a9;
+}
+
+.btn.btn.primary:active {
+  background-color: #3260a1;
+  border: 2px solid #3260a1;
+}
+
+.btn:focus {
+  outline: none;
+}
+
+.btn.confirm {
+  margin: -0.6rem -0.6rem;
+  padding: 0.6rem;
+  border: 0;
+  background: none;
+  float: right;
+  border-left: 1px solid rgb(216, 216, 216);
+  border-radius: 0;
+}
+
+.btn.btn.confirm:hover {
+  background-color: #29b62647;
+}
+
+.btn.btn.confirm:active {
+  background-color: #29b62680;
+}
+
+.p-1 {
+  padding: 0.1rem
+}
+
+.p-2 {
+  padding: 0.2rem
+}
+
+.p-3 {
+  padding: 0.3rem
+}
+
+.p-4 {
+  padding: 0.4rem
+}
+
+.p-5 {
+  padding: 0.5rem
+}
+
+.p-6 {
+  padding: 0.6rem
+}
+
+.m-1 {
+  margin: 0.1rem
+}
+
+.m-2 {
+  margin: 0.2rem
+}
+
+.m-3 {
+  margin: 0.3rem
+}
+
+.m-4 {
+  margin: 0.4rem
+}
+
+.m-5 {
+  margin: 0.5rem
+}
+
+.m-6 {
+  margin: 0.6rem
+}
+
+.anchor-simple {
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
 }

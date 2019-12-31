@@ -14,8 +14,8 @@ const Piece = ({ game, piece }: Props) => (
     ref={(ref) => {
       piece.imageRef = ref;
     }}
+    draggable
     fill={piece.type === 'K' && game.board.inCheck(piece.color) ? '#ff000040' : undefined}
-    draggable={game.onMove === piece.color && game.player.color === piece.color}
     x={piece.renderPosition.x}
     y={piece.renderPosition.y}
     width={configStore.pieceSize}
@@ -27,9 +27,12 @@ const Piece = ({ game, piece }: Props) => (
     onTap={() => {
       game.selectPiece(piece);
     }}
-    onDragStart={() => game.selectPiece(piece)}
+    onDragStart={() => {
+      game.selectPiece(piece);
+    }}
     onDragEnd={(evt) => {
-      game.movePiece(piece, { x: evt.target.x(), y: evt.target.y() });
+      game.moveBoardPiece(piece, { x: evt.target.x(), y: evt.target.y() });
+      piece.render();
     }}
   />
 );

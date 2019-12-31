@@ -56,3 +56,8 @@ declare type ClientSendData = object;
 declare interface Broadcaster {
   loadState(data: any): void;
 }
+
+declare interface ICommunication {
+  send(action: ClientAction, data: ClientSendData): Promise<void>;
+  close(): void;
+}

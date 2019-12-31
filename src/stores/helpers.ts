@@ -17,6 +17,12 @@ export const invertY = (coord: BoardCoord) => ({
   y: configStore.gameSize - coord.y - configStore.pieceSize,
 });
 
+export const translateCoordFromBoard = (coord: BoardCoord) =>
+  fromBoardCoord(configStore.invert ? invertY(coord) : coord);
+
+export const translateCoordToBoard = (coord: Coord) =>
+  configStore.invert ? invertY(toBoardCoord(coord)) : toBoardCoord(coord);
+
 export const findMove = (moves: Move[], coord: Coord) =>
   moves.find((item) => item.position.x === coord.x && item.position.y === coord.y);
 

@@ -19,7 +19,7 @@ declare interface IPiece {
   moveCount: number;
 
   move: (coord: Coord, force: boolean = false) => Move | null;
-  render: () => void;
+  render: () => Promise<void>;
 
   possibleMoves: Move[];
   generatePossibleMoves: () => Move[];
