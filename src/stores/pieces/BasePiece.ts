@@ -41,7 +41,7 @@ class BasePiece implements IPiece {
     return result;
   };
 
-  render = () => {
+  render = async () => {
     if (this.imageRef) {
       this.imageRef.to({
         ...this.renderPosition,

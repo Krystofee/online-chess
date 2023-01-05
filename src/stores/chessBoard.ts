@@ -104,7 +104,7 @@ class ChessBoard implements IChessBoard {
     const movedPiece = this.pieces.find((item) => item.id === piece.id);
 
     if (!movedPiece) {
-      throw Error('Piece not found!');
+      return;
     }
 
     movedPiece.position = position;
