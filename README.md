@@ -1,6 +1,8 @@
 # Online chess - frontend
 
-<video src='./img/gameplay.mov' />
+([Link to video](https://github.com/Krystofee/online-chess/blob/master/img/gameplay.mov))
+
+![./img/screen.png](./img/screen.png)
 
 This was my sideproject just for fun to rediscover the beauty of programming simple things for fun.
 
